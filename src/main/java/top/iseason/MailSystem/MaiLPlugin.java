@@ -35,12 +35,17 @@ public class MaiLPlugin extends JavaPlugin implements Listener {
             sendLog(ChatColor.RED + "数据库连接失败!");
             e.printStackTrace();
         }
-        MailData newMail = new MailData(0,"测试","测试内容","测试物品","Iseason");
-        try {
-            DataManager.addPlayerMail("no1127",newMail);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+//        MailData newMail = new MailData(0,"测试","测试内容","测试物品","Iseason");
+//        try {
+//            DataManager.addPlayerMail("no1127",newMail);
+//        } catch (SQLException throwables) {
+//            throwables.printStackTrace();
+//        }
+//        try {
+//            DataManager.getPlayerEmil("no1127",1);
+//        } catch (SQLException throwables) {
+//            throwables.printStackTrace();
+//        }
 //
 //
 //        steelSafesListFile = new File(getInstance().getDataFolder(), "steelSafes.yml");

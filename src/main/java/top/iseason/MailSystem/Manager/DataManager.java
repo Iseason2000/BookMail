@@ -6,6 +6,8 @@ import top.iseason.MailSystem.Util.MailData;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static top.iseason.MailSystem.Util.LogSender.sendLog;
 
@@ -67,11 +69,26 @@ public class DataManager {
         return true;
     }
 
-    public static void removeTable(String tableName) throws SQLException {
+    public static void removeMailBoxTable(String tableName) throws SQLException {
         String sql = "DROP TABLE IF EXISTS " + tableName.trim();
         stmt.executeUpdate(sql);
         c.commit();
 
+    }
+
+    public static void removePlayerMail(String tableName, int id) throws SQLException {
+        String sql = "DELETE from COMPANY where ID=" + id + ";";
+        stmt.executeUpdate(sql);
+        c.commit();
+    }
+
+    public static List<String> getPlayerEmil(String tableName, int id) throws SQLException { //
+        ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName + " WHERE ID=\"" + id + "\";");
+        List<String> mailData = new ArrayList<>();
+        for(int n = 1;n<=9;n++){
+            mailData.add(rs.getString(n));
+        }
+        return mailData;
     }
 
 }
