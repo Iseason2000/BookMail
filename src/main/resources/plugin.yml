@@ -1,0 +1,6 @@
+name: MailSystem
+main: top.iseason.MailSystem.MaiLPlugin
+version: 1.0
+author: Iseason
+softdepend: []
+commands:

@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+group 'top.iseason'
+version '1.0-SNAPSHOT'
+
+
+repositories {
+    maven {
+        url 'https://papermc.io/repo/repository/maven-public/'
+    }
+}
+
+dependencies {
+    compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
+}
+[compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
+
+// 插件导出目录
+libsDirName = 'E:\\mc\\testserver1.16.5\\plugins'
