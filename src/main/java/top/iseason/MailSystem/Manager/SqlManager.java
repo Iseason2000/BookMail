@@ -2,16 +2,14 @@ package top.iseason.MailSystem.Manager;
 
 import org.bukkit.ChatColor;
 import top.iseason.MailSystem.MaiLPlugin;
-import top.iseason.MailSystem.Util.MailData;
+import top.iseason.MailSystem.Mail;
 
 import java.io.File;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import static top.iseason.MailSystem.Util.LogSender.sendLog;
 
-public class DataManager {
+public class SqlManager {
     private static Connection c = null;
     private static Statement stmt = null;
 
@@ -57,7 +55,7 @@ public class DataManager {
         return true;
     }
 
-    public static boolean addPlayerMail(String tableName, MailData mail) throws SQLException {
+    public static boolean addPlayerMail(String tableName, Mail mail) throws SQLException {
         if (!isTableExist(tableName)) return false;
         String sql = "INSERT INTO " + tableName.trim() +
                 " (群发ID,主题,内容,附件,发送者,发送时间,已阅读,已领取) VALUES ("
@@ -82,12 +80,11 @@ public class DataManager {
         c.commit();
     }
 
-    public static List<String> getPlayerEmil(String tableName, int id) throws SQLException { //
+    public static Mail getPlayerMail(String tableName, int id) throws SQLException {
+        if(!isTableExist(tableName)) return null;
         ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName + " WHERE ID=\"" + id + "\";");
-        List<String> mailData = new ArrayList<>();
-        for(int n = 1;n<=9;n++){
-            mailData.add(rs.getString(n));
-        }
+        Mail mailData = new Mail();
+        mailData.setData(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), Boolean.parseBoolean(rs.getString(8)), Boolean.parseBoolean(rs.getString(9)));
         return mailData;
     }
 

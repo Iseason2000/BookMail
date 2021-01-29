@@ -9,12 +9,17 @@ version '1.0-SNAPSHOT'
 repositories {
     maven {
         url 'https://papermc.io/repo/repository/maven-public/'
-    }
+        }
+    maven { url 'https://repo.codemc.org/repository/maven-public/' }
+    maven { url "https://repo.dmulloy2.net/nexus/repository/public/" }
 }
 
 dependencies {
-    compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
+    compile 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
+    compile 'de.tr7zw:item-nbt-api-plugin:2.7.1'
+    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.5.1";
 }
+
 [compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
 
 // 插件导出目录

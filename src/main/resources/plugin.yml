@@ -3,4 +3,9 @@ main: top.iseason.MailSystem.MaiLPlugin
 version: 1.0
 author: Iseason
 softdepend: []
+depend: [NBTAPI,ProtocolLib]
 commands:
+  mails:
+    description: 打开邮箱。
+    aliases: [ss]
+    usage: /<command> 打开邮箱。
