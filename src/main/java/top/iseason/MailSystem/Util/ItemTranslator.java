@@ -21,6 +21,10 @@ public class ItemTranslator {
         NBTCompound itemData = NBTItem.convertItemtoNBT(item);
         return zipString(itemData.toString());
     }
+    public static String itemToNBTString(ItemStack item) {
+        NBTCompound itemData = NBTItem.convertItemtoNBT(item);
+        return itemData.toString();
+    }
 
     public static String itemListToString(ArrayList<ItemStack> itemList) {
         StringBuilder data = new StringBuilder(";");
@@ -38,10 +42,10 @@ public class ItemTranslator {
         NBTContainer cont = new NBTContainer(nbtString);
         return NBTItem.convertNBTtoItem(cont);
     }
+
     public static ItemStack zipStringToItem(String zipString) {
         String data = unzipString(zipString);
-        NBTContainer cont = new NBTContainer(data);
-        return NBTItem.convertNBTtoItem(cont);
+        return nbtStringToItem(data);
     }
 
     public static ArrayList<ItemStack> stringToItemList(String zipString) {
@@ -87,7 +91,7 @@ public class ItemTranslator {
         } finally {
             inflater.end();
         }
-        return outputStream.toString(StandardCharsets.UTF_8);
+        return outputStream.toString();
     }
 
 

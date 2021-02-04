@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import top.iseason.MailSystem.Util.ItemTranslator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -23,13 +24,14 @@ public class OpenMailCommand implements CommandExecutor, TabExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage("只有玩家才能使用这个命令");
-            return false;
+            return true;
         }
         Player player = (Player) sender;
         int slot = player.getInventory().getHeldItemSlot();
         ItemStack old = player.getInventory().getItem(slot);
         if (old != null && old.getType() == Material.WRITTEN_BOOK)
         openBook(old,player);
+        System.out.println(ItemTranslator.itemToNBTString(old));
         return true;
     }
 

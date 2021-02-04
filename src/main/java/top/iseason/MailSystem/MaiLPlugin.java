@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.iseason.MailSystem.Manager.SqlManager;
+import top.iseason.MailSystem.command.MailTranslateCommand;
 import top.iseason.MailSystem.command.OpenMailCommand;
 
 
@@ -21,7 +22,6 @@ public class MaiLPlugin extends JavaPlugin implements Listener {
 
     public void onEnable() { //启用插件
         plugin = this;
-        Bukkit.getPluginCommand("mails").setExecutor(new OpenMailCommand());
         sendLog(ChatColor.AQUA + "███╗   ███╗ █████╗ ██╗██╗     ");
         sendLog(ChatColor.AQUA + "████╗ ████║██╔══██╗██║██║     ");
         sendLog(ChatColor.AQUA + "██╔████╔██║███████║██║██║     ");
@@ -36,6 +36,7 @@ public class MaiLPlugin extends JavaPlugin implements Listener {
             sendLog(ChatColor.RED + "数据库连接失败!");
             e.printStackTrace();
         }
+        registerCommand();
 //        MailData newMail = new MailData(0, "测试", "测试内容",nbtlist, "Iseason");
 //        try {
 //            DataManager.addPlayerMail("no1127", newMail);
@@ -71,7 +72,12 @@ public class MaiLPlugin extends JavaPlugin implements Listener {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        saveDefaultConfig();
+        sendLog(ChatColor.RED + "插件已注销!");
     }
-
+private void registerCommand(){
+    Bukkit.getPluginCommand("mails").setExecutor(new OpenMailCommand());
+    Bukkit.getPluginCommand("mailSystem").setExecutor(new MailTranslateCommand());
+}
 
 }
