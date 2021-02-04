@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class BookTranslator {
     ItemStack bookItem;
     String title = "BookMailTitle";
-    String auther = "BookMailAuther";
+    String author = "BookMailAuthor";
     String oldNbtString;
     String newNbtString;
     List<String> pages;
@@ -35,11 +35,11 @@ public class BookTranslator {
             pagePatternString = "\"text\":\"(.*?)\"";
             System.out.println(oldNbtString);
             Matcher titleMatcher = Pattern.compile("title:\"(.*)\",author").matcher(oldNbtString);
-            Matcher autherMatcher = Pattern.compile("author:\"(.*)\".*").matcher(oldNbtString);
+            Matcher authorMatcher = Pattern.compile("author:\"(.*)\".*").matcher(oldNbtString);
             if (titleMatcher.find())
                 title = titleMatcher.group(1);
-            if (autherMatcher.find())
-                auther = autherMatcher.group(1);
+            if (authorMatcher.find())
+                author = authorMatcher.group(1);
         }
         Pattern pagesPattern = Pattern.compile(pagesPatternString);
         Matcher pageMatcher = pagesPattern.matcher(oldNbtString);
@@ -71,7 +71,7 @@ public class BookTranslator {
         newNbtString = "{id:\"minecraft:written_book\",tag:{pages:["
                 + translatePages() + "],title:\""
                 + title + "\",author:\""
-                + auther + "\",resolved:1b},Count:1b}";
+                + author + "\",resolved:1b},Count:1b}";
         return ItemTranslator.nbtStringToItem(newNbtString);
     }
 

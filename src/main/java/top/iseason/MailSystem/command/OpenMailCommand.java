@@ -30,7 +30,7 @@ public class OpenMailCommand implements CommandExecutor, TabExecutor {
         int slot = player.getInventory().getHeldItemSlot();
         ItemStack old = player.getInventory().getItem(slot);
         if (old != null && old.getType() == Material.WRITTEN_BOOK)
-        openBook(old,player);
+            openBook(old, player);
         System.out.println(ItemTranslator.itemToNBTString(old));
         return true;
     }
