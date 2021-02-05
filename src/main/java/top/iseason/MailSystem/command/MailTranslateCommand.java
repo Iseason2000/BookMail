@@ -1,6 +1,5 @@
 package top.iseason.MailSystem.command;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,15 +18,19 @@ public class MailTranslateCommand implements CommandExecutor {
         Player player = (Player) sender;
         ItemStack handItem = player.getInventory().getItemInMainHand();
         String itemName = handItem.getType().name();
-        if (!itemName.equals("WRITTEN_BOOK") && !itemName.equals("BOOK_AND_QUILL"))
-            throw new NullArgumentException("物品必须为成书或书与笔!");
+        if (!itemName.equals("WRITTEN_BOOK") && !itemName.equals("BOOK_AND_QUILL")) {
+            player.sendMessage(ChatColor.RED+"请先主手拿着成书或书与笔!");
+            return true;
+        }
+
         BookTranslator book = new BookTranslator(handItem);
+        book.playerTranslate();
         ItemStack newBook = book.Build();
         if (newBook == null) {
             player.sendMessage(ChatColor.RED + "书必须有内容！");
             return true;
         }
-        player.getInventory().addItem(newBook);
+        OpenMailCommand.openBook(newBook, player);
         return true;
     }
 }

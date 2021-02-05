@@ -27,11 +27,8 @@ public class OpenMailCommand implements CommandExecutor, TabExecutor {
             return true;
         }
         Player player = (Player) sender;
-        int slot = player.getInventory().getHeldItemSlot();
-        ItemStack old = player.getInventory().getItem(slot);
-        if (old != null && old.getType() == Material.WRITTEN_BOOK)
-            openBook(old, player);
-        System.out.println(ItemTranslator.itemToNBTString(old));
+//        ItemStack book = new ItemStack(Material.WRITTEN_BOOK,1);
+//        openBook(book, player);
         return true;
     }
 
