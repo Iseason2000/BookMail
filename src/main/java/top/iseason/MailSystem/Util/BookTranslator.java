@@ -158,7 +158,18 @@ public final class BookTranslator {
                     + matcher.group(1) + "\"}";
         return null;
     }
-
+    private static String buildIfPackage(String str) {
+        //\(([\s\S]*?)\)\{([\s\S]*?)\}
+        Pattern pattern = Pattern.compile("\\(([\\s\\S]*?)\\)\\{([\\s\\S]*?)}");
+        Matcher matcher = pattern.matcher(str);
+        if (matcher.find())
+            return "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\""
+                    + matcher.group(2)
+                    + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"点击领取："
+                    + "\"}},\"text\": \""
+                    + matcher.group(1) + "\"}";
+        return null;
+    }
 
 
     private static String[] splitWithDelimiters(String str, String regex) {

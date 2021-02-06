@@ -5,11 +5,6 @@ author: Iseason
 softdepend: []
 depend: [NBTAPI,ProtocolLib]
 commands:
-  mails:
+  BookMail:
     description: 打开邮箱。
-    aliases: [ss]
-    usage: /<command> 打开邮箱。
-  mailSystem:
-    description: 转换邮件。
-    aliases: [ms]
-    usage: /<command> 转换手上的邮件。
+    aliases: [bm]

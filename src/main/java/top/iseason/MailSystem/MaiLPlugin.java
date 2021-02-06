@@ -2,11 +2,13 @@ package top.iseason.MailSystem;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import top.iseason.MailSystem.Manager.PackageManager;
 import top.iseason.MailSystem.Manager.SqlManager;
-import top.iseason.MailSystem.command.MailTranslateCommand;
-import top.iseason.MailSystem.command.OpenMailCommand;
+import top.iseason.MailSystem.command.MainCommand;
+import top.iseason.MailSystem.listener.PackageListener;
 
 
 import java.sql.SQLException;
@@ -15,7 +17,7 @@ import static top.iseason.MailSystem.Util.LogSender.sendLog;
 
 public class MaiLPlugin extends JavaPlugin implements Listener {
     private static MaiLPlugin plugin;
-
+    private static PackageManager packageManager;
     public static MaiLPlugin getInstance() {
         return plugin;
     }
@@ -29,6 +31,11 @@ public class MaiLPlugin extends JavaPlugin implements Listener {
         sendLog(ChatColor.AQUA + "██║ ╚═╝ ██║██║  ██║██║███████╗");
         sendLog(ChatColor.AQUA + "╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚══════╝");
         saveDefaultConfig();
+        PluginCommand command = Bukkit.getPluginCommand("BookMail");
+        if (command != null) {
+            command.setExecutor(new MainCommand());
+            command.setTabCompleter(new MainCommand());
+        }
         try {
             SqlManager.initSqilte();
             sendLog(ChatColor.GREEN + "数据库连接成功!");
@@ -36,7 +43,8 @@ public class MaiLPlugin extends JavaPlugin implements Listener {
             sendLog(ChatColor.RED + "数据库连接失败!");
             e.printStackTrace();
         }
-        registerCommand();
+        packageManager = new PackageManager();
+        Bukkit.getPluginManager().registerEvents(new PackageListener(), this);
 //        MailData newMail = new MailData(0, "测试", "测试内容",nbtlist, "Iseason");
 //        try {
 //            DataManager.addPlayerMail("no1127", newMail);
@@ -75,9 +83,7 @@ public class MaiLPlugin extends JavaPlugin implements Listener {
         saveDefaultConfig();
         sendLog(ChatColor.RED + "插件已注销!");
     }
-private void registerCommand(){
-    Bukkit.getPluginCommand("mails").setExecutor(new OpenMailCommand());
-    Bukkit.getPluginCommand("mailSystem").setExecutor(new MailTranslateCommand());
-}
+    public static PackageManager getPackageManager(){return packageManager;}
+
 
 }

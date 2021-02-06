@@ -2,25 +2,30 @@ package top.iseason.MailSystem.command;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import top.iseason.MailSystem.Util.BookTranslator;
+import top.iseason.MailSystem.Util.SimpleSubCommand;
 
-public class MailTranslateCommand implements CommandExecutor {
+public class MailTranslateCommand extends SimpleSubCommand {
+    MailTranslateCommand(String command) {
+        super(command);
+        setUsage("translate");
+        setDescription("将手上的书转为邮件并预览");
+    }
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public void onCommand(CommandSender sender, String[] args){
         if (!(sender instanceof Player)) {
             sender.sendMessage("只有玩家才能使用这个命令");
-            return true;
+            return;
         }
         Player player = (Player) sender;
         ItemStack handItem = player.getInventory().getItemInMainHand();
         String itemName = handItem.getType().name();
         if (!itemName.equals("WRITTEN_BOOK") && !itemName.equals("BOOK_AND_QUILL")) {
             player.sendMessage(ChatColor.RED+"请先主手拿着成书或书与笔!");
-            return true;
+            return;
         }
 
         BookTranslator book = new BookTranslator(handItem);
@@ -28,9 +33,9 @@ public class MailTranslateCommand implements CommandExecutor {
         ItemStack newBook = book.Build();
         if (newBook == null) {
             player.sendMessage(ChatColor.RED + "书必须有内容！");
-            return true;
+            return;
         }
         OpenMailCommand.openBook(newBook, player);
-        return true;
+        return;
     }
 }
