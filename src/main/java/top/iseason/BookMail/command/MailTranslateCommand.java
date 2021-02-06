@@ -1,12 +1,11 @@
-package top.iseason.MailSystem.command;
+package top.iseason.BookMail.command;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import top.iseason.MailSystem.Util.BookTranslator;
-import top.iseason.MailSystem.Util.SimpleSubCommand;
+import top.iseason.BookMail.Util.BookTranslator;
+import top.iseason.BookMail.Util.SimpleSubCommand;
 
 public class MailTranslateCommand extends SimpleSubCommand {
     MailTranslateCommand(String command) {

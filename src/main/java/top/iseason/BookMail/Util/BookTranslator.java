@@ -1,4 +1,4 @@
-package top.iseason.MailSystem.Util;
+package top.iseason.BookMail.Util;
 
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;

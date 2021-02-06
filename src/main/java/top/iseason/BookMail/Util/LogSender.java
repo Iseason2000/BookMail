@@ -1,4 +1,4 @@
-package top.iseason.MailSystem.Util;
+package top.iseason.BookMail.Util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

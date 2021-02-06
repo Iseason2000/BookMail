@@ -1,4 +1,4 @@
-package top.iseason.MailSystem.Util;
+package top.iseason.BookMail.Util;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTContainer;

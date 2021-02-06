@@ -1,4 +1,4 @@
-package top.iseason.MailSystem;
+package top.iseason.BookMail;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

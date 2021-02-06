@@ -1,10 +1,10 @@
-package top.iseason.MailSystem.command;
+package top.iseason.BookMail.command;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import top.iseason.MailSystem.Util.SimpleCommand;
+import top.iseason.BookMail.Util.SimpleCommand;
 
 public class MainCommand extends SimpleCommand implements CommandExecutor {
     public MainCommand() {

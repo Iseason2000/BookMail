@@ -1,13 +1,13 @@
-package top.iseason.MailSystem.Manager;
+package top.iseason.BookMail.Manager;
 
 import org.bukkit.ChatColor;
-import top.iseason.MailSystem.MaiLPlugin;
-import top.iseason.MailSystem.Mail;
+import top.iseason.BookMail.BookMailPlugin;
+import top.iseason.BookMail.Mail;
 
 import java.io.File;
 import java.sql.*;
 
-import static top.iseason.MailSystem.Util.LogSender.sendLog;
+import static top.iseason.BookMail.Util.LogSender.sendLog;
 
 public class SqlManager {
     private static Connection c = null;
@@ -15,7 +15,7 @@ public class SqlManager {
 
     public static void initSqilte() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
-        File dataBaseFile = new File(MaiLPlugin.getInstance().getDataFolder(), "mailboxes.db");
+        File dataBaseFile = new File(BookMailPlugin.getInstance().getDataFolder(), "mailboxes.db");
         if (!dataBaseFile.exists())
             sendLog(ChatColor.YELLOW + "未找到数据库，已创建新数据库!");
         c = DriverManager.getConnection("jdbc:sqlite:" + dataBaseFile.getAbsolutePath().replace("\\", "/"));

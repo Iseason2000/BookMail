@@ -1,7 +1,7 @@
-package top.iseason.MailSystem.Manager;
+package top.iseason.BookMail.Manager;
 
 import org.bukkit.entity.Player;
-import top.iseason.MailSystem.Util.Package;
+import top.iseason.BookMail.Util.Package;
 
 import java.util.HashMap;
 import java.util.Map;

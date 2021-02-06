@@ -1,6 +1,6 @@
-package top.iseason.MailSystem.Manager;
+package top.iseason.BookMail.Manager;
 
-import top.iseason.MailSystem.Mail;
+import top.iseason.BookMail.Mail;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

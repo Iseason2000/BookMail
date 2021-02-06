@@ -1,4 +1,4 @@
-package top.iseason.MailSystem.command;
+package top.iseason.BookMail.command;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -7,7 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import top.iseason.MailSystem.Util.SimpleSubCommand;
+import top.iseason.BookMail.Util.SimpleSubCommand;
 
 import java.lang.reflect.InvocationTargetException;
 

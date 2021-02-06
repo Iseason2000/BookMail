@@ -1,9 +1,9 @@
-package top.iseason.MailSystem.Util;
+package top.iseason.BookMail.Util;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import top.iseason.MailSystem.MaiLPlugin;
+import top.iseason.BookMail.BookMailPlugin;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,7 +37,7 @@ public abstract class SimpleCommand implements TabCompleter {
 
     private List<String> getHelpMessage(CommandSender sender) {
 
-        MaiLPlugin plugin = MaiLPlugin.getInstance();
+        BookMailPlugin plugin = BookMailPlugin.getInstance();
 
         List<String> helpMessage = new ArrayList<>();
 

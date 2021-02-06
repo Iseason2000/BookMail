@@ -1,24 +1,24 @@
-package top.iseason.MailSystem;
+package top.iseason.BookMail;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import top.iseason.MailSystem.Manager.PackageManager;
-import top.iseason.MailSystem.Manager.SqlManager;
-import top.iseason.MailSystem.command.MainCommand;
-import top.iseason.MailSystem.listener.PackageListener;
+import top.iseason.BookMail.Manager.PackageManager;
+import top.iseason.BookMail.Manager.SqlManager;
+import top.iseason.BookMail.command.MainCommand;
+import top.iseason.BookMail.listener.PackageListener;
 
 
 import java.sql.SQLException;
 
-import static top.iseason.MailSystem.Util.LogSender.sendLog;
+import static top.iseason.BookMail.Util.LogSender.sendLog;
 
-public class MaiLPlugin extends JavaPlugin implements Listener {
-    private static MaiLPlugin plugin;
+public class BookMailPlugin extends JavaPlugin implements Listener {
+    private static BookMailPlugin plugin;
     private static PackageManager packageManager;
-    public static MaiLPlugin getInstance() {
+    public static BookMailPlugin getInstance() {
         return plugin;
     }
 
