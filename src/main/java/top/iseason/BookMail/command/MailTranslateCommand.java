@@ -13,8 +13,9 @@ public class MailTranslateCommand extends SimpleSubCommand {
         setUsage("translate");
         setDescription("将手上的书转为邮件并预览");
     }
+
     @Override
-    public void onCommand(CommandSender sender, String[] args){
+    public void onCommand(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage("只有玩家才能使用这个命令");
             return;
@@ -23,12 +24,12 @@ public class MailTranslateCommand extends SimpleSubCommand {
         ItemStack handItem = player.getInventory().getItemInMainHand();
         String itemName = handItem.getType().name();
         if (!itemName.equals("WRITTEN_BOOK") && !itemName.equals("BOOK_AND_QUILL")) {
-            player.sendMessage(ChatColor.RED+"请先主手拿着成书或书与笔!");
+            player.sendMessage(ChatColor.RED + "请先主手拿着成书或书与笔!");
             return;
         }
 
-        BookTranslator book = new BookTranslator(handItem);
-        book.playerTranslate();
+        BookTranslator book = new BookTranslator(handItem,true);
+        book.TranslateContent();
         ItemStack newBook = book.Build();
         if (newBook == null) {
             player.sendMessage(ChatColor.RED + "书必须有内容！");

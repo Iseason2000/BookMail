@@ -1,35 +1,58 @@
 package top.iseason.BookMail.Util;
 
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
+import top.iseason.BookMail.Manager.SqlManager;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class BookTranslator {
+    Boolean isReview;
     ItemStack bookItem;
     String title = "BookMailTitle";
     String author = "BookMailAuthor";
     String NbtString;
+    String packageCDK = "";
     List<String> pages;
 
-    public BookTranslator(ItemStack bookItem) {
+    public BookTranslator(ItemStack bookItem, Boolean ifReview) {
         this.bookItem = bookItem;
         NbtString = ItemTranslator.itemToNBTString(bookItem);
+        isReview = ifReview;
         loadContents();
     }
-    public void playerTranslate() {
+
+    public void TranslateContent() {
         NbtString = "{id:\"minecraft:written_book\",tag:{pages:["
                 + translatePages() + "],title:\""
                 + title + "\",author:\""
                 + author + "\",resolved:1b},Count:1b}";
     }
+
+    public String getZipString() {
+        return ItemTranslator.zipString(NbtString);
+    }
+
+    public String getTitle() {
+        return Message.toColor(title);
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getCDK() {
+        return packageCDK;
+    }
+
     public ItemStack Build() {
         if (pages.isEmpty()) return null;
         return ItemTranslator.nbtStringToItem(NbtString);
     }
+
     private void loadContents() {
         pages = new ArrayList<>();
         String pagesPatternString = null;
@@ -54,7 +77,7 @@ public final class BookTranslator {
         Matcher matcher = pagePattern.matcher(pageMatcher.group(1));
         while (matcher.find()) {
             String pageContent = matcher.group(1);
-            pages.add(toColor(pageContent));
+            pages.add(Message.toColor(pageContent));
         }
     }
 
@@ -88,6 +111,8 @@ public final class BookTranslator {
             buildString = buildIfRunCommand(thisPart);
             if (tryAppend(buildString, newString, n, maxindex)) continue;
             buildString = buildIfCopyToClipboard(thisPart);
+            if (tryAppend(buildString, newString, n, maxindex)) continue;
+            buildString = buildIfPackage(thisPart);
             if (tryAppend(buildString, newString, n, maxindex)) continue;
             buildString = "{\"text\":\"" + thisPart + "\"}";
             tryAppend(buildString, newString, n, maxindex);
@@ -158,19 +183,29 @@ public final class BookTranslator {
                     + matcher.group(1) + "\"}";
         return null;
     }
-    private static String buildIfPackage(String str) {
+
+    private String buildIfPackage(String str) {
         //\(([\s\S]*?)\)\{([\s\S]*?)\}
         Pattern pattern = Pattern.compile("\\(([\\s\\S]*?)\\)\\{([\\s\\S]*?)}");
         Matcher matcher = pattern.matcher(str);
-        if (matcher.find())
-            return "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\""
+        if (matcher.find()) {
+            String cdk = matcher.group(2);
+            try {
+                if (!SqlManager.isPackageExist(cdk)) return "{\"text\": \""+str+"\"}";
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            packageCDK = cdk;
+            if (isReview)
+                return "{\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"点击领取\"}},\"text\": \""
+                        + matcher.group(1) + "\"}";
+            return "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail package get "
                     + matcher.group(2)
-                    + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"点击领取："
-                    + "\"}},\"text\": \""
+                    + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"点击领取\"}},\"text\": \""
                     + matcher.group(1) + "\"}";
+        }
         return null;
     }
-
 
     private static String[] splitWithDelimiters(String str, String regex) {
         List<String> parts = new ArrayList<>();
@@ -194,7 +229,4 @@ public final class BookTranslator {
         return parts.toArray(new String[]{});
     }
 
-    private static String toColor(String string) {
-        return ChatColor.translateAlternateColorCodes('&', string);
-    }
 }

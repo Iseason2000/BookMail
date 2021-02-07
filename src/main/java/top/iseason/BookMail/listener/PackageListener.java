@@ -4,16 +4,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import top.iseason.BookMail.BookMailPlugin;
-import top.iseason.BookMail.Util.Package;
+import top.iseason.BookMail.Manager.PackageManager;
+import top.iseason.BookMail.myclass.Package;
 
 public class PackageListener implements Listener {
     @EventHandler
     public void onInventoryCloseEvent(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof Package.PackageInventory)) return;
         Player player = (Player) event.getPlayer();
-        if (BookMailPlugin.getPackageManager().contains(player)) {
-            Package a = BookMailPlugin.getPackageManager().getPackage(player);
+        if (PackageManager.contains(player)) {
+            Package a = PackageManager.getPackage(player);
             a.update();
         }
     }

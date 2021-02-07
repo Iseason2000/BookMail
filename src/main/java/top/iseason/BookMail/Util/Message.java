@@ -37,6 +37,9 @@ public class Message {
         ConsoleCommandSender consoleSender = Bukkit.getConsoleSender();
         consoleSender.sendMessage(toColor(message));
     }
+    public static void sendLog(String message){
+        Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"Mail"+ChatColor.GOLD+"System "+ChatColor.GREEN+"| "+ChatColor.RESET+toColor(message));
+    }
 
     public static void sendConsole(String[] message) {
 

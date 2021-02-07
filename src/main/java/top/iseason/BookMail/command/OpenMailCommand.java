@@ -12,13 +12,14 @@ import top.iseason.BookMail.Util.SimpleSubCommand;
 import java.lang.reflect.InvocationTargetException;
 
 public class OpenMailCommand extends SimpleSubCommand {
-    OpenMailCommand(String command){
+    OpenMailCommand(String command) {
         super(command);
         setUsage("open [page]");
         setDescription("打开自己的邮箱");
     }
+
     @Override
-    public void onCommand(CommandSender sender, String[] args){
+    public void onCommand(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage("只有玩家才能使用这个命令");
             return;

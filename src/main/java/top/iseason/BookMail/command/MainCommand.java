@@ -16,6 +16,7 @@ public class MainCommand extends SimpleCommand implements CommandExecutor {
         registerSubCommand(new OpenMailCommand("open"));
         registerSubCommand(new PackageCommand("package"));
         registerSubCommand(new MailTranslateCommand("translate"));
+        registerSubCommand(new MailSendCommand("send"));
     }
 
     @Override

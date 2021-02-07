@@ -5,11 +5,16 @@ import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTItem;
 
 import org.bukkit.inventory.ItemStack;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.DataFormatException;
@@ -21,21 +26,35 @@ public class ItemTranslator {
         NBTCompound itemData = NBTItem.convertItemtoNBT(item);
         return zipString(itemData.toString());
     }
+
     public static String itemToNBTString(ItemStack item) {
         NBTCompound itemData = NBTItem.convertItemtoNBT(item);
         return itemData.toString();
     }
 
-    public static String itemListToString(ArrayList<ItemStack> itemList) {
-        StringBuilder data = new StringBuilder(";");
+    public static String itemListToZipString(List<ItemStack> itemList) {
+        StringBuilder data = new StringBuilder();
         for (ItemStack item : itemList) {
             if (item != null) {
+                data.append("<|>"); //分隔符
                 NBTCompound itemData = NBTItem.convertItemtoNBT(item);
                 String nbtData = itemData.toString();
-                data.append(nbtData).append(";");
+                data.append(nbtData).append("<|>"); //分隔符
             }
         }
         return zipString(data.toString());
+    }
+
+    public static List<ItemStack> zipStringToItemList(String zipString) {
+        String nbtString = unzipString(zipString);
+        List<ItemStack> itemList = new ArrayList<>();
+        if (nbtString != null) {
+            Matcher matcher = Pattern.compile("<\\|>([\\s\\S]*?)<\\|>").matcher(nbtString);
+            while (matcher.find()) {
+                itemList.add(nbtStringToItem(matcher.group(1)));
+            }
+        }
+        return itemList;
     }
 
     public static ItemStack nbtStringToItem(String nbtString) {
@@ -91,7 +110,12 @@ public class ItemTranslator {
         } finally {
             inflater.end();
         }
-        return outputStream.toString();
+        try {
+            return outputStream.toString("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 

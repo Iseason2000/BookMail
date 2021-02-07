@@ -1,28 +1,67 @@
 package top.iseason.BookMail.Manager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import top.iseason.BookMail.Util.Package;
+import org.bukkit.inventory.ItemStack;
+import top.iseason.BookMail.Util.ItemTranslator;
+import top.iseason.BookMail.myclass.Package;
 
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PackageManager {
-    private final Map<String, Package> tempPlayerPackage;
-    public PackageManager(){
+    private static Map<String, Package> tempPlayerPackage;
+
+    public PackageManager() {
         tempPlayerPackage = new HashMap<>();
     }
-    public void addPackage(Player player ,Package pack){
-        tempPlayerPackage.put(player.getName(),pack);
+
+    public static void addPackage(Player player, Package pack) {
+        tempPlayerPackage.put(player.getName(), pack);
     }
-    public void removePackage(Player player){
+
+    public static void removePackage(Player player) {
         tempPlayerPackage.remove(player.getName());
     }
-    public Package getPackage(Player player){
-        if(tempPlayerPackage.containsKey(player.getName()))
-        return tempPlayerPackage.get(player.getName());
+
+    public static Package getPackage(Player player) {
+        if (tempPlayerPackage.containsKey(player.getName()))
+            return tempPlayerPackage.get(player.getName());
         return null;
     }
-    public Boolean contains(Player player){
+
+    public static Boolean buildPackage(Player player, int num) {
+        Package playerPackage = tempPlayerPackage.get(player.getName());
+        String zipString = ItemTranslator.itemListToZipString(playerPackage.getItems());
+        String cdk = SqlManager.addPackage(zipString, num, player.getName());
+        if (cdk == null) return false;
+        sendCDKMessage(player, cdk);
+        return true;
+    }
+
+    public static List<ItemStack> getPackageItemListFromSql(String cdk) {
+        String zipString;
+        try {
+            zipString = SqlManager.getPackageZipString(cdk);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+        if (zipString == null) return null;
+        return ItemTranslator.zipStringToItemList(zipString);
+    }
+
+    public static void sendCDKMessage(Player player, String cdk) {
+        String command = "tellraw " + player.getName() + " [{\"text\":\"§a包裹创建成功，§eCDK： §6" + cdk
+                + "\"},{\"text\":\"【§d点击复制§r】\",\"clickEvent\":{\"action\":\"copy_to_clipboard\",\"value\":\"" +
+                cdk + "\"}},{\"text\":\"【§9点击复制模板§r】\",\"clickEvent\":{\"action\":\"copy_to_clipboard\",\"value\":\"(领取包裹){" +
+                cdk + "}\"}}]";
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+    }
+
+    public static Boolean contains(Player player) {
         return tempPlayerPackage.containsKey(player.getName());
     }
 }
