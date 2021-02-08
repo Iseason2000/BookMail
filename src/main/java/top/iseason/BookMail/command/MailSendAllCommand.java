@@ -64,6 +64,7 @@ public class MailSendAllCommand extends SimpleSubCommand {
 
     public static void sendOnlineCommand(Player player) {
         Mail mail = MailManager.getMailInHand(player);
+        if(mail == null )return;
         mail.type = "online";
         new BukkitRunnable() {
             @Override
@@ -75,6 +76,7 @@ public class MailSendAllCommand extends SimpleSubCommand {
 
     public static void sendOfflineCommand(Player player) {
         Mail mail = MailManager.getMailInHand(player);
+        if(mail == null )return;
         mail.type = "offline";
         new BukkitRunnable() {
             @Override
@@ -86,6 +88,7 @@ public class MailSendAllCommand extends SimpleSubCommand {
 
     public static void sendAllCommand(Player player) {
         Mail mail = MailManager.getMailInHand(player);
+        if(mail == null )return;
         mail.type = "all";
         new BukkitRunnable() {
             @Override
