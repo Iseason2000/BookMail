@@ -20,11 +20,11 @@ public class PackageCommand extends SimpleSubCommand {
 
     public PackageCommand(String command) {
         super(command);
-        setUsage("package create/edit/build");
+        setUsage("package ");
         addSubCommand("create");
         addSubCommand("edit");
         addSubCommand("build");
-        setDescription("创建/修改/打包 包裹");
+        setDescription("列出包裹命令说明。");
     }
 
     @Override
@@ -138,9 +138,9 @@ public class PackageCommand extends SimpleSubCommand {
         List<String> helpMessage = new ArrayList<>();
         helpMessage.add("&6&m+-------------+&9&l " + BookMailPlugin.getInstance().getName() + "&e - &a&lPackage &6&m+-------------+");
         helpMessage.add(" ");
-        helpMessage.add("&d/BookMail" + " &6create" + "&e 创建一个包裹");
-        helpMessage.add("&d/BookMail" + " &6edit" + "&e 修改你的包裹");
-        helpMessage.add("&d/BookMail" + " &6build" + "&e 将你的包裹打包");
+        helpMessage.add("&d/BookMail package" + " &6create" + "&e 创建一个包裹");
+        helpMessage.add("&d/BookMail package" + " &6edit" + "&e 修改你的包裹");
+        helpMessage.add("&d/BookMail package" + " &6build" + "&e 将你的包裹打包");
         Message.send(player, helpMessage);
     }
 

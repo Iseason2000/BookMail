@@ -3,16 +3,12 @@ package top.iseason.BookMail.Util;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTItem;
-
 import org.bukkit.inventory.ItemStack;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;

@@ -30,8 +30,9 @@ public class SqlManager {
         systemConnection = DriverManager.getConnection("jdbc:sqlite:" + systemFile.getAbsolutePath().replace("\\", "/"));
         systemStmt = systemConnection.createStatement();
         systemConnection.setAutoCommit(false);
-        createSystemPackageTable("PackageList");
+        createSystemPackageTable();
         createSystemMailTable("SystemMail");
+        createSystemPlayerLoginTimeTable();
     }
 
     public static void disableSqlite() throws SQLException {
@@ -56,9 +57,9 @@ public class SqlManager {
         return flag;
     }
 
-    private static void createSystemPackageTable(String packageTable) throws SQLException {
-        if (isTableExist(0, packageTable)) return;
-        String sql = "CREATE TABLE " + packageTable.trim() +
+    private static void createSystemPackageTable() throws SQLException {
+        if (isTableExist(0, "PackageList")) return;
+        String sql = "CREATE TABLE " + "PackageList".trim() +
                 "(包裹ID TEXT NOT NULL," +
                 "内容 TEXT," +
                 "数量 INTEGER," +
@@ -69,8 +70,29 @@ public class SqlManager {
         systemConnection.commit();
     }
 
+    private static void createSystemPlayerLoginTimeTable() throws SQLException {
+        if (isTableExist(0, "LoginTime")) return;
+        String sql = "CREATE TABLE " + "LoginTime" +
+                "(玩家名称 TEXT ," +
+                "登录时间 TEXT," +
+                "PRIMARY KEY(玩家名称));";
+        systemStmt.executeUpdate(sql);
+        systemConnection.commit();
+    }
+
+    public static void updatePlayerLoginTime(String name, String time) throws SQLException {
+        String sql = "INSERT OR REPLACE INTO LoginTime (玩家名称,登录时间) VALUES (\"" + name.trim() + "\",\"" + time + "\");";
+        systemStmt.executeUpdate(sql);
+        systemConnection.commit();
+    }
+
+    public static String getPlayerLoginTime(String name) throws SQLException {
+        ResultSet rs = systemStmt.executeQuery("SELECT * FROM LoginTime WHERE 玩家名称=\"" + name.trim() + "\";");
+        return rs.getString(2);
+    }
+
     public static String addPackage(String zipString, int num, String owner) {
-        String cdk = Tools.getCDK();
+        String cdk = Tools.getCDK(11);
         String sql = "INSERT INTO PackageList"
                 + " (包裹ID,内容,数量,拥有者,创建时间) VALUES (\""
                 + cdk + "\", " + "\"" + zipString + "\", " + num + ", "
@@ -86,7 +108,7 @@ public class SqlManager {
     }
 
     public static String getPackageZipString(String cdk) throws SQLException {
-        if (!isPackageExist(cdk)) return null;
+        if (!isRecordExist(0, "PackageList", "包裹ID", cdk)) return null;
         ResultSet rs = systemStmt.executeQuery("SELECT * FROM PackageList WHERE 包裹ID=\"" + cdk + "\";");
         int count = rs.getInt(3);
         String zipString = rs.getString(2);
@@ -100,17 +122,25 @@ public class SqlManager {
         return zipString;
     }
 
-    public static Boolean isPackageExist(String cdk) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM PackageList where 包裹ID=\"" + cdk + "\";";
-        ResultSet resultSet = systemStmt.executeQuery(sql);
-        return resultSet.getInt(1) == 1;
+    //
+//    public static Boolean isPackageExist(String cdk) throws SQLException {
+//        String sql = "SELECT COUNT(*) FROM PackageList where 包裹ID=\"" + cdk + "\";";
+//        ResultSet resultSet = systemStmt.executeQuery(sql);
+//        return resultSet.getInt(1) == 1;
+//    }
+    public static Boolean isRecordExist(int database, String tableName, String column, String value) throws SQLException {
+        int count = getRecordValueCount(database, tableName, column, value);
+        return count >= 1;
     }
 
     public static int getRecordValueCount(int database, String tableName, String column, String value) throws SQLException {
-        Statement statement = null;
-        if (database == 1) statement = mailBoxesStmt;
-        statement = systemStmt;
-        String sql = "SELECT COUNT(*) FROM " + tableName + " where " + column + "=\"" + value + "\";";
+        Statement statement;
+        if (database == 1) {
+            statement = mailBoxesStmt;
+        } else {
+            statement = systemStmt;
+        }
+        String sql = "SELECT COUNT(*) FROM " + tableName.trim() + " where " + column.trim() + "='" + value + "';";
         ResultSet resultSet = statement.executeQuery(sql);
         return resultSet.getInt(1);
     }
@@ -126,7 +156,8 @@ public class SqlManager {
         if (isTableExist(0, tableName)) return;
         String sql = "CREATE TABLE " + tableName.trim() +
                 "(ID INTEGER NOT NULL," +
-                "群发ID INTEGER," +
+                "群发ID TEXT," +
+                "类型 TEXT," +
                 "主题 TEXT," +
                 "内容 TEXT," +
                 "附件 TEXT," +
@@ -139,11 +170,21 @@ public class SqlManager {
         systemConnection.commit();
     }
 
+    public static void addSystemMail(Mail mail) throws SQLException {
+        String sql = "INSERT INTO SystemMail" +
+                " (群发ID,类型,主题,内容,附件,发送者,发送时间,阅读数,领取数) VALUES (\""
+                + mail.groupID + "\", " + "\"" + mail.type + "\", " + "\"" + mail.theme + "\", "
+                + "\"" + mail.content + "\", " + "\"" + mail.attached + "\", " + "\"" + mail.sender
+                + "\", " + "\"" + mail.time + "\", " + "0," + "0);";
+        systemStmt.executeUpdate(sql);
+        systemConnection.commit();
+    }
+
     public static boolean createPlayerMailBoxTable(String tableName) throws SQLException { //不区分大小写
         if (isTableExist(1, tableName)) return false;
         String sql = "CREATE TABLE " + tableName.trim() +
                 "(ID INTEGER NOT NULL," +
-                "群发ID INTEGER," +
+                "群发ID TEXT," +
                 "主题 TEXT," +
                 "内容 TEXT," +
                 "附件 TEXT," +
@@ -160,14 +201,15 @@ public class SqlManager {
     public static boolean addPlayerMail(String tableName, Mail mail) throws SQLException {
         if (!isTableExist(1, tableName)) return false;
         String sql = "INSERT INTO " + tableName.trim() +
-                " (群发ID,主题,内容,附件,发送者,发送时间,已阅读,已领取) VALUES ("
-                + mail.groupID + ", " + "\"" + mail.theme + "\", " + "\"" + mail.content + "\", "
+                " (群发ID,主题,内容,附件,发送者,发送时间,已阅读,已领取) VALUES (\""
+                + mail.groupID + "\", " + "\"" + mail.theme + "\", " + "\"" + mail.content + "\", "
                 + "\"" + mail.attached + "\", " + "\"" + mail.sender + "\", " + "\"" + mail.time + "\", "
                 + "0," + "0);";
         mailBoxesStmt.executeUpdate(sql);
         mailBoxesConnection.commit();
         return true;
     }
+
 
     public static void removeTable(int database, String tableName) throws SQLException {
         String sql = "DROP TABLE IF EXISTS " + tableName.trim();
@@ -190,7 +232,7 @@ public class SqlManager {
         if (!isTableExist(1, tableName)) return null;
         ResultSet rs = mailBoxesStmt.executeQuery("SELECT * FROM " + tableName + " WHERE ID=\"" + id + "\";");
         Mail mailData = new Mail();
-        mailData.setData(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), Boolean.parseBoolean(rs.getString(8)), Boolean.parseBoolean(rs.getString(9)));
+        mailData.setData(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), Boolean.parseBoolean(rs.getString(8)), Boolean.parseBoolean(rs.getString(9)));
         return mailData;
     }
 

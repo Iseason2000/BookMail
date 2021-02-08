@@ -1,5 +1,11 @@
 package top.iseason.BookMail.Manager;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import top.iseason.BookMail.Util.BookTranslator;
+import top.iseason.BookMail.Util.Message;
 import top.iseason.BookMail.myclass.Mail;
 
 import java.sql.SQLException;
@@ -12,7 +18,7 @@ public class MailManager {
         List<String> noPlayerMailList = new ArrayList<>();
         for (String name : playerNames) {
             try {
-                if(!SqlManager.addPlayerMail(name, mail)){
+                if (!SqlManager.addPlayerMail(name, mail)) {
                     noPlayerMailList.add(name);
                 }
             } catch (SQLException throwables) {
@@ -21,5 +27,30 @@ public class MailManager {
             }
         }
         return noPlayerMailList;
+    }
+
+    public static Boolean sendSystemMail(Mail mail) {
+        try {
+            SqlManager.addSystemMail(mail);
+            return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+    }
+
+    //    public static Mail getSystemMail(){
+//
+//    }
+    public static Mail getMailInHand(Player player) {
+        ItemStack bookItem = player.getInventory().getItemInMainHand();
+        if (bookItem.getType() != Material.WRITTEN_BOOK) {
+            Message.send(player, ChatColor.YELLOW + "你需要拿着成书才能发送邮件！");
+            return null;
+        }
+        BookTranslator book = new BookTranslator(bookItem, false);
+        book.TranslateContent();
+        String content = book.getZipString();
+        return new Mail("", book.getTitle(), content, book.getCDK(), book.getAuthor());
     }
 }

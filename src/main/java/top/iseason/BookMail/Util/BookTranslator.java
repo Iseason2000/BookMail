@@ -191,7 +191,7 @@ public final class BookTranslator {
         if (matcher.find()) {
             String cdk = matcher.group(2);
             try {
-                if (!SqlManager.isPackageExist(cdk)) return "{\"text\": \""+str+"\"}";
+                if (!SqlManager.isRecordExist(0,"PackageList","包裹ID",cdk)) return "{\"text\": \""+str+"\"}";
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
