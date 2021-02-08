@@ -27,7 +27,7 @@ public class MailSendAllCommand extends SimpleSubCommand {
         addSubCommand("offline");
         addSubCommand("registered");
         addSubCommand("new");
-        addSubCommand("loginBefore");
+        addSubCommand("loginTime");
         setDescription("打开批量发送帮助信息");
     }
 
@@ -45,26 +45,39 @@ public class MailSendAllCommand extends SimpleSubCommand {
             showHelp(player);
             return;
         }
-        if (args.length == 1) {
-            switch (args[0]) {
-                case "online":
-                    sendOnlineCommand(player);
-                    break;
-                case "offline":
-                    sendOfflineCommand(player);
-                    break;
-                case "registered":
-                    sendAllCommand(player);
-                    break;
-
-            }
+        switch (args[0]) {
+            case "online":
+                sendOnlineCommand(player);
+                break;
+            case "offline":
+                sendOfflineCommand(player);
+                break;
+            case "registered":
+                sendAllCommand(player);
+                break;
+            case "new":
+                sendNewCommand(player);
+                break;
+            case "loginTime":
+                if (args.length == 1){
+                    List<String> helpMessage = new ArrayList<>();
+                    helpMessage.add("&6&m+--------+&9&l " + BookMailPlugin.getInstance().getName() + "&e -> &a&lSendAll &e-> &e&lLoginTime&6&m+--------+");
+                    helpMessage.add("&a支持的参数： &fx&6s&fx&6m&fx&6h&fx&6d&f (&fx&a为整数&f) &dyyyy-MM-dd-HH:mm:ss,&e例子:");
+                    helpMessage.add( "--&61d2h &b表示&61&b天又&62&b小时之内登录过的玩家");
+                    helpMessage.add( "--&62021-02-08-22:09:04 表示&a这个时间点之后&b登录过的玩家");
+                    helpMessage.add("--&62021-02-08-22:09:04 &62021-02-08-22:09:04");
+                    helpMessage.add( "-&b表示&a两个时间段之间&b登录过的玩家");
+                    Message.send(player,helpMessage);
+                }
+                break;
+            default:
+                showHelp(player);
         }
-
     }
 
     public static void sendOnlineCommand(Player player) {
         Mail mail = MailManager.getMailInHand(player);
-        if(mail == null )return;
+        if (mail == null) return;
         mail.type = "online";
         new BukkitRunnable() {
             @Override
@@ -76,7 +89,7 @@ public class MailSendAllCommand extends SimpleSubCommand {
 
     public static void sendOfflineCommand(Player player) {
         Mail mail = MailManager.getMailInHand(player);
-        if(mail == null )return;
+        if (mail == null) return;
         mail.type = "offline";
         new BukkitRunnable() {
             @Override
@@ -88,12 +101,29 @@ public class MailSendAllCommand extends SimpleSubCommand {
 
     public static void sendAllCommand(Player player) {
         Mail mail = MailManager.getMailInHand(player);
-        if(mail == null )return;
+        if (mail == null) return;
         mail.type = "all";
         new BukkitRunnable() {
             @Override
             public void run() {
                 groupSend(player, mail, getAllPlayer());
+            }
+        }.runTaskAsynchronously(BookMailPlugin.getInstance());
+    }
+
+    public static void sendNewCommand(Player player) {
+        Mail mail = MailManager.getMailInHand(player);
+        if (mail == null) return;
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                mail.type = "new";
+                mail.groupID = Tools.getCDK(5);
+                if (!MailManager.sendSystemMail(mail)) {
+                    Message.send(player, ChatColor.RED + "发送失败！数据库异常。");
+                    return;
+                }
+                Message.send(player, ChatColor.GREEN + "已添加新玩家欢迎邮件！");
             }
         }.runTaskAsynchronously(BookMailPlugin.getInstance());
     }
@@ -106,7 +136,7 @@ public class MailSendAllCommand extends SimpleSubCommand {
         helpMessage.add("&d/BookMail sendAll" + " &6offline     " + "&e 向所有&9离线&e玩家的发送邮件");
         helpMessage.add("&d/BookMail sendAll" + " &6registered" + "&e 向所有&a注册&e的玩家发送邮件");
         helpMessage.add("&d/BookMail sendAll" + " &6new         " + "&e 向所有&b新注册&e的玩家发送邮件");
-        helpMessage.add("&d/BookMail sendAll" + " &6login [day]" + "&e 向所有&bx天之内登录过&e的玩家发送邮件");
+        helpMessage.add("&d/BookMail sendAll" + " &6loginTime   " + "&e 向指定&b最后登录时间&e的玩家发送邮件");
         helpMessage.add(" ");
         Message.send(player, helpMessage);
     }
@@ -125,7 +155,6 @@ public class MailSendAllCommand extends SimpleSubCommand {
         lightMail.sender = mail.sender;
         lightMail.time = mail.time;
         MailSendCommand.sendMail(sender, lightMail, players);
-
     }
 
     public static String[] getAllPlayer() {

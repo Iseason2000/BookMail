@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import top.iseason.BookMail.Util.BookTranslator;
+import top.iseason.BookMail.myclass.BookTranslator;
 import top.iseason.BookMail.Util.Message;
 import top.iseason.BookMail.myclass.Mail;
 
@@ -27,6 +27,16 @@ public class MailManager {
             }
         }
         return noPlayerMailList;
+    }
+
+    public static Boolean sendMailtoPlayer(Mail mail, String playerName) {
+        try {
+            SqlManager.addPlayerMail(playerName, mail);
+            return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
     }
 
     public static Boolean sendSystemMail(Mail mail) {

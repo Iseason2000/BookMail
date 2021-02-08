@@ -1,7 +1,10 @@
-package top.iseason.BookMail.Util;
+package top.iseason.BookMail.myclass;
 
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import top.iseason.BookMail.Manager.SqlManager;
+import top.iseason.BookMail.Util.ItemTranslator;
+import top.iseason.BookMail.Util.Message;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -63,12 +66,16 @@ public final class BookTranslator {
         } else {
             pagesPatternString = "pages:\\[([\\s\\S]*)]";
             pagePatternString = "\"text\":\"([\\s\\S]*?)\"";
-            Matcher titleMatcher = Pattern.compile("title:\"(.*)\",author").matcher(NbtString);
-            Matcher authorMatcher = Pattern.compile("author:\"(.*)\".*").matcher(NbtString);
-            if (titleMatcher.find())
-                title = titleMatcher.group(1);
-            if (authorMatcher.find())
-                author = authorMatcher.group(1);
+            BookMeta bookMeta = (BookMeta)bookItem.getItemMeta();
+            title = bookMeta.getTitle();
+            author = bookMeta.getAuthor();
+            //取消使用nbt正则匹配
+//            Matcher titleMatcher = Pattern.compile("title:\"(.*?)\"").matcher(NbtString);
+//            Matcher authorMatcher = Pattern.compile("author:\"(.*?)\"").matcher(NbtString);
+//            if (titleMatcher.find())
+//                title = titleMatcher.group(1);
+//            if (authorMatcher.find())
+//                author = authorMatcher.group(1);
         }
         Pattern pagesPattern = Pattern.compile(pagesPatternString);
         Matcher pageMatcher = pagesPattern.matcher(NbtString);

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import top.iseason.BookMail.BookMailPlugin;
-import top.iseason.BookMail.Util.BookTranslator;
+import top.iseason.BookMail.myclass.BookTranslator;
 import top.iseason.BookMail.Util.SimpleSubCommand;
 
 public class MailTranslateCommand extends SimpleSubCommand {

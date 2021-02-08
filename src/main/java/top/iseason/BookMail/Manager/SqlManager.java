@@ -7,6 +7,7 @@ import top.iseason.BookMail.Util.Tools;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 
 import static top.iseason.BookMail.Util.Message.sendLog;
 
@@ -178,6 +179,19 @@ public class SqlManager {
                 + "\", " + "\"" + mail.time + "\", " + "0," + "0);";
         systemStmt.executeUpdate(sql);
         systemConnection.commit();
+    }
+    public static ArrayList<Mail> getSystemMail(String type) throws SQLException {
+        String sql = "SELECT * FROM SystemMail WHERE 类型=\"" + type + "\";";
+        ResultSet rs = systemStmt.executeQuery(sql);
+        ArrayList<Mail> mails = new ArrayList<>();
+        while (rs.next()) {
+            Mail mail = new Mail();
+            mail.groupID = rs.getString(2);
+            mail.sender = rs.getString(7);
+            mail.time = rs.getString(8);
+            mails.add(mail);
+        }
+        return mails;
     }
 
     public static boolean createPlayerMailBoxTable(String tableName) throws SQLException { //不区分大小写

@@ -18,7 +18,7 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 public class ItemTranslator {
-    public static String itemToString(ItemStack item) {
+    public static String itemToZipString(ItemStack item) {
         NBTCompound itemData = NBTItem.convertItemtoNBT(item);
         return zipString(itemData.toString());
     }
@@ -62,19 +62,6 @@ public class ItemTranslator {
         String data = unzipString(zipString);
         return nbtStringToItem(data);
     }
-
-    public static ArrayList<ItemStack> stringToItemList(String zipString) {
-        String data = unzipString(zipString);
-        Pattern pattern = Pattern.compile("(?<=;).*?(?=;)");
-        Matcher matcher = pattern.matcher(data);
-        ArrayList<ItemStack> itemList = new ArrayList<>();
-        while (matcher.find()) {
-            String nbtData = matcher.group(0);
-            itemList.add(nbtStringToItem(nbtData));
-        }
-        return itemList;
-    }
-
     public static String zipString(String unzipString) {
         Deflater deflater = new Deflater(Deflater.BEST_SPEED);
         deflater.setInput(unzipString.getBytes(StandardCharsets.UTF_8));

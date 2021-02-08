@@ -12,8 +12,8 @@ public class Mail {
     public String attached;
     public String sender;
     public String time;
-    public boolean isRead;
-    public boolean isAccept;
+    public boolean isRead =false;
+    public boolean isAccept =false;
     public Mail(){}
     public Mail(String groupID, String theme, String content, String attached, String sender) { //新邮件
         this.groupID = groupID;
