@@ -63,4 +63,5 @@ public class MailManager {
         String content = book.getZipString();
         return new Mail("", book.getTitle(), content, book.getCDK(), book.getAuthor());
     }
+
 }

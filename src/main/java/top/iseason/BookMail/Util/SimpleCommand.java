@@ -45,8 +45,7 @@ public abstract class SimpleCommand implements TabCompleter {
         helpMessage.add("");
 
         for (SimpleSubCommand subCommand : subCommands) {
-            System.out.println(subCommand.permission);
-            helpMessage.add("&d/BookMail" + " " + subCommand.usage + "&e " + subCommand.description);
+            helpMessage.add("&b/BookMail" + " &6" + subCommand.usage + "&e " + subCommand.description);
         }
         helpMessage.add("");
 

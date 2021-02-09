@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.List;
 
 public class Message {
@@ -28,7 +29,7 @@ public class Message {
 
     public static void send(CommandSender sender, String message) {
         if (message == null || message.isEmpty()) return;
-        sender.sendMessage(toColor(message));
+        sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.AQUA + "BookMail" + ChatColor.GOLD + "]" + ChatColor.GRAY + ": " + ChatColor.RESET + toColor(message));
     }
 
     public static void sendConsole(String message) {
@@ -37,8 +38,9 @@ public class Message {
         ConsoleCommandSender consoleSender = Bukkit.getConsoleSender();
         consoleSender.sendMessage(toColor(message));
     }
-    public static void sendLog(String message){
-        Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW+"Mail"+ChatColor.GOLD+"System "+ChatColor.GREEN+"| "+ChatColor.RESET+toColor(message));
+
+    public static void sendLog(String message) {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Mail" + ChatColor.GOLD + "System " + ChatColor.GREEN + "| " + ChatColor.RESET + toColor(message));
     }
 
     public static void sendConsole(String[] message) {
@@ -101,7 +103,7 @@ public class Message {
         for (int count = 0; count < replace.length; count += 2) {
 
             String oldChar = replace[count];
-            
+
             if (!message.contains(oldChar)) {
                 continue;
             }

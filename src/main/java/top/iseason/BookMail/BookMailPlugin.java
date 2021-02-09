@@ -7,19 +7,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import top.iseason.BookMail.Manager.PackageManager;
 import top.iseason.BookMail.Manager.SqlManager;
-import top.iseason.BookMail.Util.Message;
+import top.iseason.BookMail.Manager.TimeManager;
 import top.iseason.BookMail.command.MainCommand;
 import top.iseason.BookMail.listener.PackageListener;
 import top.iseason.BookMail.listener.PlayerJoinListener;
 
-
 import java.sql.SQLException;
+
 
 import static top.iseason.BookMail.Util.Message.sendLog;
 
 public class BookMailPlugin extends JavaPlugin implements Listener {
     private static BookMailPlugin plugin;
     private static PackageManager packageManager;
+    private static TimeManager timeManager;
+
     public static BookMailPlugin getInstance() {
         return plugin;
     }
@@ -46,34 +48,11 @@ public class BookMailPlugin extends JavaPlugin implements Listener {
             e.printStackTrace();
         }
         packageManager = new PackageManager();
+        timeManager = new TimeManager();
+
         Bukkit.getPluginManager().registerEvents(new PackageListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
-//        MailData newMail = new MailData(0, "测试", "测试内容",nbtlist, "Iseason");
-//        try {
-//            DataManager.addPlayerMail("no1127", newMail);
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//        }
-//        try {
-//            sendLog(DataManager.getPlayerEmil("no1127", 1).toString());
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//        }
-//
-//
-//        steelSafesListFile = new File(getInstance().getDataFolder(), "steelSafes.yml");
-//        steelSafesOwner = YamlConfiguration.loadConfiguration(steelSafesListFile);
-//        ownerListFile = new File(getInstance().getDataFolder(), "owners.yml");
-//        ownerList = YamlConfiguration.loadConfiguration(ownerListFile);
-//        Bukkit.getPluginManager().registerEvents(new BreakingProtection(), this);//这里类是监听器, 将当前对象注册监听器
-//        Bukkit.getPluginManager().registerEvents(new OpenCheck(), this);
-//        Bukkit.getPluginManager().registerEvents(new MoveItemEvent(), this);
-//        Bukkit.getPluginCommand("steelsafe").setExecutor(new CreateCommand());
-//        Bukkit.getPluginCommand("steelsafereremove").setExecutor(new RemoveCommand());
-//        Bukkit.getPluginCommand("steelsafekey").setExecutor(new OpenWithKey());
-//        Bukkit.getPluginCommand("steelsafereload").setExecutor(new steelsafereload());
-//        Bukkit.getPluginCommand("steelsafeshowkey").setExecutor(new ShowMyChest());
-        sendLog(ChatColor.GREEN + "插件已启用! "+ChatColor.GOLD+"作者:"+ChatColor.BLUE+"Iceason");
+        sendLog(ChatColor.GREEN + "插件已启用! " + ChatColor.GOLD + "作者:" + ChatColor.BLUE + "Iceason");
     }
 
 
@@ -86,7 +65,13 @@ public class BookMailPlugin extends JavaPlugin implements Listener {
         saveDefaultConfig();
         sendLog(ChatColor.RED + "插件已注销!");
     }
-    public static PackageManager getPackageManager(){return packageManager;}
 
+    public static PackageManager getPackageManager() {
+        return packageManager;
+    }
+
+    public static TimeManager getTimeManager() {
+        return timeManager;
+    }
 
 }

@@ -32,8 +32,9 @@ public class SqlManager {
         systemStmt = systemConnection.createStatement();
         systemConnection.setAutoCommit(false);
         createSystemPackageTable();
-        createSystemMailTable("SystemMail");
+        createSystemMailTable();
         createSystemPlayerLoginTimeTable();
+        createSystemOnTimeTaskTable();
     }
 
     public static void disableSqlite() throws SQLException {
@@ -87,9 +88,8 @@ public class SqlManager {
         systemConnection.commit();
     }
 
-    public static String getPlayerLoginTime(String name) throws SQLException {
-        ResultSet rs = systemStmt.executeQuery("SELECT * FROM LoginTime WHERE 玩家名称=\"" + name.trim() + "\";");
-        return rs.getString(2);
+    public static ResultSet getPlayerLoginTime() throws SQLException {
+        return systemStmt.executeQuery("SELECT * FROM LoginTime;");
     }
 
     public static String addPackage(String zipString, int num, String owner) {
@@ -123,12 +123,6 @@ public class SqlManager {
         return zipString;
     }
 
-    //
-//    public static Boolean isPackageExist(String cdk) throws SQLException {
-//        String sql = "SELECT COUNT(*) FROM PackageList where 包裹ID=\"" + cdk + "\";";
-//        ResultSet resultSet = systemStmt.executeQuery(sql);
-//        return resultSet.getInt(1) == 1;
-//    }
     public static Boolean isRecordExist(int database, String tableName, String column, String value) throws SQLException {
         int count = getRecordValueCount(database, tableName, column, value);
         return count >= 1;
@@ -153,9 +147,9 @@ public class SqlManager {
 
     }
 
-    private static void createSystemMailTable(String tableName) throws SQLException {
-        if (isTableExist(0, tableName)) return;
-        String sql = "CREATE TABLE " + tableName.trim() +
+    private static void createSystemMailTable() throws SQLException {
+        if (isTableExist(0, "SystemMail")) return;
+        String sql = "CREATE TABLE SystemMail" +
                 "(ID INTEGER NOT NULL," +
                 "群发ID TEXT," +
                 "类型 TEXT," +
@@ -171,6 +165,38 @@ public class SqlManager {
         systemConnection.commit();
     }
 
+    private static void createSystemOnTimeTaskTable() throws SQLException {
+        if (isTableExist(0, "OnTimeTask")) return;
+        String sql = "CREATE TABLE OnTimeTask" +
+                "(ID INTEGER NOT NULL," +
+                "群发ID TEXT," +
+                "群发参数 TEXT," +
+                "类型 TEXT," +
+                "发送时间 TEXT," +
+                "添加时间 TEXT," +
+                "PRIMARY KEY(ID AUTOINCREMENT));";
+        systemStmt.executeUpdate(sql);
+        systemConnection.commit();
+    }
+    public static void addTask(String groupID, String groupArgs, String type, String time, String addTime) throws SQLException {
+        String sql = "INSERT INTO OnTimeTask" +
+                " (群发ID,群发参数,类型,发送时间,添加时间) VALUES (\""
+                + groupID + "\", " + "\"" + groupArgs + "\", "
+                + "\"" + type + "\", " + "\"" + time + "\"," + "\"" + addTime + "\");";
+        systemStmt.executeUpdate(sql);
+        systemConnection.commit();
+    }
+    public static void removeTask(String groupID) throws SQLException {
+        String sql = "DELETE from OnTimeTask where 群发ID=\"" + groupID + "\";";
+        systemStmt.executeUpdate(sql);
+        systemConnection.commit();
+
+    }
+
+    public static ResultSet getTaskList() throws SQLException {
+        return systemStmt.executeQuery("SELECT * FROM OnTimeTask;");
+    }
+
     public static void addSystemMail(Mail mail) throws SQLException {
         String sql = "INSERT INTO SystemMail" +
                 " (群发ID,类型,主题,内容,附件,发送者,发送时间,阅读数,领取数) VALUES (\""
@@ -180,6 +206,7 @@ public class SqlManager {
         systemStmt.executeUpdate(sql);
         systemConnection.commit();
     }
+
     public static ArrayList<Mail> getSystemMail(String type) throws SQLException {
         String sql = "SELECT * FROM SystemMail WHERE 类型=\"" + type + "\";";
         ResultSet rs = systemStmt.executeQuery(sql);
