@@ -105,6 +105,7 @@ public class MailSendOnTimeCommand extends SimpleSubCommand {
             public void run() {
                 if (TimeManager.addOnTimeTask(mail.groupID, args[2], "period", args[1])) {
                     String[] taskArgs = splitPeriodType(args[1]);
+                    if(taskArgs !=null)
                     if (taskArgs[0].contains("day")) {
                         Message.send(player, "&a已添加 每 &b" + taskArgs[1] + " &6天&e" + taskArgs[2] + " &a的定时邮件！");
                     } else {

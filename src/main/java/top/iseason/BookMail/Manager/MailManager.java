@@ -49,7 +49,6 @@ public class MailManager {
         }
     }
 
-
     //    public static Mail getSystemMail(){
 //
 //    }
@@ -64,5 +63,8 @@ public class MailManager {
         String content = book.getZipString();
         return new Mail("", book.getTitle(), content, book.getCDK(), book.getAuthor());
     }
+//    public static ItemStack getPlayerMailBox(String playerName){
+//        ArrayList<Mail> playerMails = SqlManager.getPlayerMails(playerName);
+//    }
 
 }

@@ -40,7 +40,7 @@ public class Message {
     }
 
     public static void sendLog(String message) {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Mail" + ChatColor.GOLD + "System " + ChatColor.GREEN + "| " + ChatColor.RESET + toColor(message));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "Book" + ChatColor.AQUA + "Mail " + ChatColor.GREEN + "| " + ChatColor.RESET + toColor(message));
     }
 
     public static void sendConsole(String[] message) {

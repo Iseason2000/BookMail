@@ -282,7 +282,7 @@ public class SqlManager {
     }
 
     public static void removePlayerMail(String tableName, int id) throws SQLException {
-        String sql = "DELETE from COMPANY where ID=" + id + ";";
+        String sql = "DELETE from " + tableName.trim() + " where ID=" + id + ";";
         mailBoxesStmt.executeUpdate(sql);
         mailBoxesConnection.commit();
     }
@@ -290,9 +290,90 @@ public class SqlManager {
     public static Mail getPlayerMail(String tableName, int id) throws SQLException {
         if (!isTableExist(1, tableName)) return null;
         ResultSet rs = mailBoxesStmt.executeQuery("SELECT * FROM " + tableName + " WHERE ID=\"" + id + "\";");
+        if (rs.isClosed()) return null;
         Mail mailData = new Mail();
-        mailData.setData(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), Boolean.parseBoolean(rs.getString(8)), Boolean.parseBoolean(rs.getString(9)));
+        String groupID = rs.getString(2);
+        String theme = rs.getString(3);
+        String content = rs.getString(4);
+        String attached = rs.getString(5);
+        String sender = rs.getString(6);
+        String sendTime = rs.getString(7);
+        boolean isRead = rs.getBoolean(8);
+        boolean isAccept = rs.getBoolean(9);
+        if (!groupID.isEmpty()) {
+            String groupTheme = getSystemRecord("SystemMail", groupID, "主题");
+            if (groupTheme == null) {
+                removePlayerMail(tableName, id);
+                return null;
+            }
+            if (!isRead) {
+                setPlayerMailIsRead(tableName, id);
+                addSystemMailReadCount(groupID);
+            }
+            theme = groupTheme;
+            content = getSystemRecord("SystemMail", groupID, "内容");
+            attached = getSystemRecord("SystemMail", groupID, "附件");
+        }
+        mailData.setData(id, groupID, theme, content, attached, sender, sendTime, isRead, isAccept);
         return mailData;
+    }
+
+    public static String getSystemRecord(String tableName, String groupID, String value) {
+        String sql = "SELECT * FROM " + tableName + " WHERE 群发ID=\"" + groupID + "\";";
+        try {
+            ResultSet rs = systemStmt.executeQuery(sql);
+            return rs.getString(value);
+        } catch (SQLException throwables) {
+            return null;
+        }
+    }
+
+    public static void setPlayerMailIsRead(String playerName, int id) throws SQLException {
+        mailBoxesStmt.executeUpdate("UPDATE " + playerName.trim() + " SET 已阅读 = 1 WHERE ID=" + id + ";");
+        mailBoxesConnection.commit();
+    }
+
+    public static void setPlayerMailIsAccept(String playerName, int id) throws SQLException {
+        mailBoxesStmt.executeUpdate("UPDATE " + playerName.trim() + " SET 已领取 = 1 WHERE ID=" + id + ";");
+        mailBoxesConnection.commit();
+    }
+
+    public static void addSystemMailAcceptCount(String groupID) throws SQLException {
+        int oldAcceptCount = Integer.parseInt(getSystemRecord("SystemMail", groupID, "领取数"));
+        systemStmt.executeUpdate("UPDATE SystemMail SET 领取数 = " + (++oldAcceptCount) + " WHERE 群发ID=\"" + groupID + "\";");
+        systemConnection.commit();
+    }
+
+    public static void addSystemMailReadCount(String groupID) throws SQLException {
+        int oldReadCount = Integer.parseInt(getSystemRecord("SystemMail", groupID, "阅读数"));
+        systemStmt.executeUpdate("UPDATE SystemMail SET 阅读数 = " + (++oldReadCount) + " WHERE 群发ID=\"" + groupID + "\";");
+        systemConnection.commit();
+    }
+
+    public static ArrayList<Mail> getPlayerMails(String playerName) throws SQLException {
+        ArrayList<Mail> mailList = new ArrayList<>();
+        ResultSet rs = mailBoxesStmt.executeQuery("SELECT * FROM " + playerName + ";");
+        while (rs.next()) {
+            Mail mailData = new Mail();
+            String groupID = rs.getString(2);
+            String theme = rs.getString(3);
+            String content = rs.getString(4);
+            String attached = rs.getString(5);
+            if (!groupID.isEmpty()) {
+                String groupTheme = getSystemRecord("SystemMail", groupID, "主题");
+                if (groupTheme == null) {
+                    removePlayerMail(playerName, rs.getInt(1));
+                    continue;
+                }
+                theme = groupTheme;
+                content = getSystemRecord("SystemMail", groupID, "内容");
+                attached = getSystemRecord("SystemMail", groupID, "附件");
+            }
+            mailData.setData(rs.getInt(1), rs.getString(2), theme, content, attached, rs.getString(6), rs.getString(7), Boolean.parseBoolean(rs.getString(8)), Boolean.parseBoolean(rs.getString(9)));
+
+            mailList.add(mailData);
+        }
+        return mailList;
     }
 
 }

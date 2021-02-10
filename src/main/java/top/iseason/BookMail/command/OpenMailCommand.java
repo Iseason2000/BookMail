@@ -7,9 +7,15 @@ import com.comphenix.protocol.events.PacketContainer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import top.iseason.BookMail.BookMailPlugin;
+import top.iseason.BookMail.Manager.SqlManager;
+import top.iseason.BookMail.Util.ItemTranslator;
 import top.iseason.BookMail.Util.SimpleSubCommand;
+import top.iseason.BookMail.myclass.Mail;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 
 public class OpenMailCommand extends SimpleSubCommand {
     OpenMailCommand(String command) {
@@ -24,6 +30,31 @@ public class OpenMailCommand extends SimpleSubCommand {
             sender.sendMessage("只有玩家才能使用这个命令");
             return;
         }
+        Player player = (Player) sender;
+        if (args.length == 1) {
+            int id;
+            try {
+                id = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                return;
+            }
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        Mail playerMail = SqlManager.getPlayerMail(player.getName(), id);
+                        if (playerMail == null) return;
+                        String content = playerMail.content;
+                        openBook(ItemTranslator.zipStringToItem(content), player);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                }
+            }.runTaskAsynchronously(BookMailPlugin.getInstance());
+
+
+        }
+
 //        Player player = (Player) sender;
 //        ItemStack book = new ItemStack(Material.WRITTEN_BOOK,1);
 //        openBook(book, player);

@@ -200,6 +200,9 @@ public class MailSendGroupCommand extends SimpleSubCommand {
         }
         Mail lightMail = new Mail();
         lightMail.groupID = mail.groupID;
+        lightMail.theme="";
+        lightMail.content="";
+        lightMail.attached="";
         lightMail.isAccept = false;
         lightMail.isRead = false;
         lightMail.sender = mail.sender;

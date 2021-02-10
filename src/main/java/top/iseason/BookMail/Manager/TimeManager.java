@@ -93,28 +93,30 @@ public class TimeManager extends BukkitRunnable {
         LocalDateTime now = LocalDateTime.now();
         Period period = Period.between(taskTime.toLocalDate(), now.toLocalDate());
         String[] args = MailSendOnTimeCommand.splitPeriodType(timeString);
-        if (args[0].equals("day")) {
-            int day = Integer.parseInt(args[1]);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-            LocalTime time = LocalTime.parse(args[2], formatter);
-            long nextPlusDay = period.getDays() % day; //距离下一次的天数
-            if (nextPlusDay == 0) {
-                if (time.isBefore(now.toLocalTime())) nextPlusDay++;
+        if (args != null)
+            if (args[0].equals("day")) {
+                int day = Integer.parseInt(args[1]);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                LocalTime time = LocalTime.parse(args[2], formatter);
+                long nextPlusDay = period.getDays() % day; //距离下一次的天数
+                if (nextPlusDay == 0) {
+                    if (time.isBefore(now.toLocalTime())) nextPlusDay++;
+                }
+                return LocalDateTime.of(now.plusDays(nextPlusDay).toLocalDate(), time);
             }
-            return LocalDateTime.of(now.plusDays(nextPlusDay).toLocalDate(), time);
-        }
-        if (args[0].equals("month")) {
-            int month = Integer.parseInt(args[1]);
-            long nextPlusMonth = period.getMonths() % month; //距离下一次的月
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-            LocalTime time = LocalTime.parse(args[3], formatter);
-            if (nextPlusMonth == 0) {
-                if (Integer.parseInt(args[2]) < now.toLocalDate().getDayOfMonth()) nextPlusMonth++;
-                else if (time.isBefore(now.toLocalTime())) nextPlusMonth++;
+        if (args != null)
+            if (args[0].equals("month")) {
+                int month = Integer.parseInt(args[1]);
+                long nextPlusMonth = period.getMonths() % month; //距离下一次的月
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                LocalTime time = LocalTime.parse(args[3], formatter);
+                if (nextPlusMonth == 0) {
+                    if (Integer.parseInt(args[2]) < now.toLocalDate().getDayOfMonth()) nextPlusMonth++;
+                    else if (time.isBefore(now.toLocalTime())) nextPlusMonth++;
+                }
+                LocalDateTime newTime = now.plusMonths(nextPlusMonth);
+                return LocalDateTime.of(newTime.toLocalDate(), time);
             }
-            LocalDateTime newTime = now.plusMonths(nextPlusMonth);
-            return LocalDateTime.of(newTime.toLocalDate(), time);
-        }
         return null;
     }
 
@@ -135,6 +137,9 @@ public class TimeManager extends BukkitRunnable {
             Mail systemMail = SqlManager.getSystemMail(groupID);
             systemMail.isAccept = false;
             systemMail.isRead = false;
+            systemMail.theme = "";
+            systemMail.content = "";
+            systemMail.attached = "";
             systemMail.time = Tools.getDataAndTime();
             String groupMailType = SqlManager.getTaskString(groupID, "群发参数");
             String taskType = SqlManager.getTaskString(groupID, "类型");
