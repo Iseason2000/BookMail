@@ -20,6 +20,7 @@ import static top.iseason.BookMail.Util.Message.sendLog;
 public class BookMailPlugin extends JavaPlugin implements Listener {
     private static BookMailPlugin plugin;
     private static PackageManager packageManager;
+
     private static TimeManager timeManager;
 
     public static BookMailPlugin getInstance() {
@@ -47,12 +48,11 @@ public class BookMailPlugin extends JavaPlugin implements Listener {
             sendLog(ChatColor.RED + "数据库连接失败!");
             e.printStackTrace();
         }
-        packageManager = new PackageManager();
-        timeManager = new TimeManager();
-
         Bukkit.getPluginManager().registerEvents(new PackageListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         sendLog(ChatColor.GREEN + "插件已启用! " + ChatColor.GOLD + "作者:" + ChatColor.BLUE + "Iceason");
+        packageManager = new PackageManager();
+        timeManager = new TimeManager();
     }
 
 
@@ -74,4 +74,7 @@ public class BookMailPlugin extends JavaPlugin implements Listener {
         return timeManager;
     }
 
+    public static void setTimeManager(TimeManager timeManager) {
+        BookMailPlugin.timeManager = timeManager;
+    }
 }

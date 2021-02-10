@@ -33,6 +33,7 @@ public class MailSendGroupCommand extends SimpleSubCommand {
         addSubCommand("loginTime");
         setDescription("打开群发帮助信息 [需要OP]");
     }
+
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {

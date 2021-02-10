@@ -32,7 +32,7 @@ public class MailTranslateCommand extends SimpleSubCommand {
                     player.sendMessage(ChatColor.RED + "请先主手拿着成书或书与笔!");
                     return;
                 }
-                BookTranslator book = new BookTranslator(handItem,true);
+                BookTranslator book = new BookTranslator(handItem, true);
                 book.TranslateContent();
                 ItemStack newBook = book.Build();
                 if (newBook == null) {

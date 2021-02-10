@@ -32,8 +32,8 @@ public class MailSendCommand extends SimpleSubCommand {
         }
         if (!player.isOp() && args.length > 1) return;
         Mail mail = MailManager.getMailInHand(player);
-        if(mail == null) return;
-        sendMail(player,mail,args);
+        if (mail == null) return;
+        sendMail(player, mail, args);
         if (!player.isOp()) {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item.getAmount() == 1) {
@@ -44,7 +44,8 @@ public class MailSendCommand extends SimpleSubCommand {
 
         }
     }
-    public static void sendMail(Player player,Mail mail,String[] players){
+
+    public static void sendMail(Player player, Mail mail, String[] players) {
         List<String> failureList = MailManager.sendMailtoPlayers(mail, players);
         int mailCount = players.length;
         int failureCount = failureList.size();
@@ -53,10 +54,10 @@ public class MailSendCommand extends SimpleSubCommand {
             for (String name : failureList) {
                 failureNames.append(" ").append(name);
             }
-            Message.send(player, "&e邮件&a"+(mailCount-failureCount)+"&6/&6"+mailCount+"&e已发送，但有 &c" + failureCount +  "&e 人发送失败!&d他们分别是:");
+            Message.send(player, "&e邮件&a" + (mailCount - failureCount) + "&6/&6" + mailCount + "&e已发送，但有 &c" + failureCount + "&e 人发送失败!&d他们分别是:");
             Message.send(player, ChatColor.GRAY + failureNames.toString());
         } else {
-            Message.send(player,  "&a成功发送 &6"+mailCount+"&a 封邮件!");
+            Message.send(player, "&a成功发送 &6" + mailCount + "&a 封邮件!");
         }
     }
 }

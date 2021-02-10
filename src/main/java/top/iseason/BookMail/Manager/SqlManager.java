@@ -178,6 +178,7 @@ public class SqlManager {
         systemStmt.executeUpdate(sql);
         systemConnection.commit();
     }
+
     public static void addTask(String groupID, String groupArgs, String type, String time, String addTime) throws SQLException {
         String sql = "INSERT INTO OnTimeTask" +
                 " (群发ID,群发参数,类型,发送时间,添加时间) VALUES (\""
@@ -186,6 +187,7 @@ public class SqlManager {
         systemStmt.executeUpdate(sql);
         systemConnection.commit();
     }
+
     public static void removeTask(String groupID) throws SQLException {
         String sql = "DELETE from OnTimeTask where 群发ID=\"" + groupID + "\";";
         systemStmt.executeUpdate(sql);
@@ -195,6 +197,12 @@ public class SqlManager {
 
     public static ResultSet getTaskList() throws SQLException {
         return systemStmt.executeQuery("SELECT * FROM OnTimeTask;");
+    }
+
+    public static String getTaskString(String groupID, String column) throws SQLException {
+        String sql = "SELECT * FROM OnTimeTask WHERE 群发ID=\"" + groupID + "\";";
+        ResultSet rs = systemStmt.executeQuery(sql);
+        return rs.getString(column);
     }
 
     public static void addSystemMail(Mail mail) throws SQLException {
@@ -207,7 +215,7 @@ public class SqlManager {
         systemConnection.commit();
     }
 
-    public static ArrayList<Mail> getSystemMail(String type) throws SQLException {
+    public static ArrayList<Mail> getSystemMails(String type) throws SQLException {
         String sql = "SELECT * FROM SystemMail WHERE 类型=\"" + type + "\";";
         ResultSet rs = systemStmt.executeQuery(sql);
         ArrayList<Mail> mails = new ArrayList<>();
@@ -219,6 +227,16 @@ public class SqlManager {
             mails.add(mail);
         }
         return mails;
+    }
+
+    public static Mail getSystemMail(String groupID) throws SQLException {
+        String sql = "SELECT * FROM SystemMail WHERE 群发ID=\"" + groupID + "\";";
+        ResultSet rs = systemStmt.executeQuery(sql);
+        Mail mail = new Mail();
+        mail.groupID = rs.getString(2);
+        mail.sender = rs.getString(7);
+        mail.time = rs.getString(8);
+        return mail;
     }
 
     public static boolean createPlayerMailBoxTable(String tableName) throws SQLException { //不区分大小写
