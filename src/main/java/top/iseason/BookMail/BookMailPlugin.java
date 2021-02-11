@@ -5,12 +5,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import top.iseason.BookMail.Manager.ConfigManager;
 import top.iseason.BookMail.Manager.PackageManager;
 import top.iseason.BookMail.Manager.SqlManager;
 import top.iseason.BookMail.Manager.TimeManager;
 import top.iseason.BookMail.command.MainCommand;
 import top.iseason.BookMail.listener.PackageListener;
-import top.iseason.BookMail.listener.PlayerJoinListener;
+import top.iseason.BookMail.listener.PlayerListener;
 
 import java.sql.SQLException;
 
@@ -20,9 +21,8 @@ import static top.iseason.BookMail.Util.Message.sendLog;
 public class BookMailPlugin extends JavaPlugin implements Listener {
     private static BookMailPlugin plugin;
     private static PackageManager packageManager;
-
     private static TimeManager timeManager;
-
+    private static ConfigManager configManager;
     public static BookMailPlugin getInstance() {
         return plugin;
     }
@@ -49,10 +49,11 @@ public class BookMailPlugin extends JavaPlugin implements Listener {
             e.printStackTrace();
         }
         Bukkit.getPluginManager().registerEvents(new PackageListener(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
         sendLog(ChatColor.GREEN + "插件已启用! " + ChatColor.GOLD + "作者:" + ChatColor.BLUE + "Iceason");
         packageManager = new PackageManager();
         timeManager = new TimeManager();
+        configManager = new ConfigManager(this);
     }
 
 
@@ -77,4 +78,8 @@ public class BookMailPlugin extends JavaPlugin implements Listener {
     public static void setTimeManager(TimeManager timeManager) {
         BookMailPlugin.timeManager = timeManager;
     }
+    public static ConfigManager getConfigManager() {
+        return configManager;
+    }
+
 }

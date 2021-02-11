@@ -19,6 +19,7 @@ public class MainCommand extends SimpleCommand implements CommandExecutor {
         registerSubCommand(new MailSendCommand("send"));
         registerSubCommand(new MailSendGroupCommand("sendGroup"));
         registerSubCommand(new MailSendOnTimeCommand("sendOnTime"));
+        registerSubCommand(new MailBoxCommand("mailboxItem"));
     }
 
     @Override

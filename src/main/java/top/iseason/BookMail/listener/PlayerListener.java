@@ -1,21 +1,28 @@
 package top.iseason.BookMail.listener;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import top.iseason.BookMail.BookMailPlugin;
 import top.iseason.BookMail.Manager.MailManager;
 import top.iseason.BookMail.Manager.SqlManager;
 import top.iseason.BookMail.Util.Message;
 import top.iseason.BookMail.Util.Tools;
+import top.iseason.BookMail.command.OpenMailCommand;
 import top.iseason.BookMail.myclass.Mail;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class PlayerJoinListener implements Listener {
+public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         String name = event.getPlayer().getName();
@@ -41,5 +48,13 @@ public class PlayerJoinListener implements Listener {
                 }
             }
         }.runTaskAsynchronously(BookMailPlugin.getInstance());
+    }
+    @EventHandler
+    public void onPlayerInteractEvent(PlayerInteractEvent event) {
+        if(event.getAction()!= Action.RIGHT_CLICK_AIR)return;
+        ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
+        if(!item.equals(BookMailPlugin.getConfigManager().getOpenMailItem()))return;
+        OpenMailCommand.openMailBox(event.getPlayer());
+
     }
 }

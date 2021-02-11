@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import top.iseason.BookMail.Util.ItemTranslator;
 import top.iseason.BookMail.Util.Message;
 import top.iseason.BookMail.myclass.BookTranslator;
 import top.iseason.BookMail.myclass.Mail;
@@ -63,8 +64,55 @@ public class MailManager {
         String content = book.getZipString();
         return new Mail("", book.getTitle(), content, book.getCDK(), book.getAuthor());
     }
-//    public static ItemStack getPlayerMailBox(String playerName){
-//        ArrayList<Mail> playerMails = SqlManager.getPlayerMails(playerName);
-//    }
+
+    public static ItemStack getPlayerMailBox(String playerName) {
+        try {
+            ArrayList<Mail> playerMails = SqlManager.getPlayerMails(playerName);
+            ArrayList<String> mailStringList = new ArrayList<>();
+            for (Mail mail : playerMails) {
+                String theme = mail.theme;
+                String attach = "";
+                if(mail.attached.length()!=0)attach="§e有附件✉\\\\n";
+                String titleInfo = mail.theme + "\\\\n" +attach+ "§b发件人: §6" + mail.sender + "\\\\n" + "§b时间: §a" + mail.time;
+                int noColorLength = ChatColor.stripColor(theme).length();
+                if (noColorLength > 9) {
+                    int extraWordCount = noColorLength - 9;
+                    theme = theme.substring(0, theme.length() - extraWordCount).concat("...");
+                }
+                String mailTitle = "§0《".concat(theme).concat("§0》§r");
+                if (!mail.isRead) mailTitle = "§6❀".concat(mailTitle);
+                String mailPart1 = "{\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\""
+                        + titleInfo + "\"}},\"text\":\"" + mailTitle + "\\\\n\"},";
+                String mailPart2 = "{\"text\":\"§7---------\"},";
+                String mailPart3 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail remove " + mail.ID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§c删除该邮件\"}},\"text\":\"§4[删除] \"},";
+                String mailPart4 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail open " + mail.ID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§a阅读该邮件\"}},\"text\":\"§2[打开]\\\\n\\\\n§r\"}";
+                String mailString = mailPart1 + mailPart2 + mailPart3 + mailPart4;
+                mailStringList.add(mailString);
+            }
+            StringBuilder pageContent = new StringBuilder();
+            StringBuilder allContent = new StringBuilder();
+            int mailCount = 0;
+            int size = mailStringList.size();
+            for (String mailString : mailStringList) {
+                mailCount++;
+                if (mailCount % 5 == 0 || mailCount == size) {
+                    pageContent.append(mailString);
+                    if (mailCount == size)
+                        allContent.append("'{\"extra\":[").append(pageContent).append("],\"text\":\"\"}'");
+                    else
+                        allContent.append("'{\"extra\":[").append(pageContent).append("],\"text\":\"\"}',");
+                    pageContent = new StringBuilder();
+                } else {
+                    pageContent.append(mailString).append(",");
+                }
+            }
+            String nbtString = "{id:\"minecraft:written_book\",tag:{pages:[" + allContent.toString() + "],resolved:1b,author:\"BookMail\",title:\"BookMailBox\"},Count:1b}";
+            return ItemTranslator.nbtStringToItem(nbtString);
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
 
 }

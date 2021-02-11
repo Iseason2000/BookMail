@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import top.iseason.BookMail.BookMailPlugin;
+import top.iseason.BookMail.Manager.MailManager;
 import top.iseason.BookMail.Manager.SqlManager;
 import top.iseason.BookMail.Util.ItemTranslator;
 import top.iseason.BookMail.Util.SimpleSubCommand;
@@ -43,6 +44,7 @@ public class OpenMailCommand extends SimpleSubCommand {
                 public void run() {
                     try {
                         Mail playerMail = SqlManager.getPlayerMail(player.getName(), id);
+                        SqlManager.setPlayerMailIsRead(player.getName(), id);
                         if (playerMail == null) return;
                         String content = playerMail.content;
                         openBook(ItemTranslator.zipStringToItem(content), player);
@@ -51,9 +53,9 @@ public class OpenMailCommand extends SimpleSubCommand {
                     }
                 }
             }.runTaskAsynchronously(BookMailPlugin.getInstance());
-
-
+        return;
         }
+        openMailBox(player);
 
 //        Player player = (Player) sender;
 //        ItemStack book = new ItemStack(Material.WRITTEN_BOOK,1);
@@ -69,7 +71,15 @@ public class OpenMailCommand extends SimpleSubCommand {
 //            return null;
 //        }
 //    }
-
+    public static void openMailBox(Player player){
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                ItemStack bookItem = MailManager.getPlayerMailBox(player.getName());
+                openBook(bookItem,player);
+            }
+        }.runTaskAsynchronously(BookMailPlugin.getInstance());
+    }
     public static void openBook(ItemStack book, Player p) { //使玩家打开某本书(署名的)
         int slot = p.getInventory().getHeldItemSlot();
         ItemStack old = p.getInventory().getItem(slot);

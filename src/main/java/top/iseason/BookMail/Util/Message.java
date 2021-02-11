@@ -6,7 +6,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 import java.text.DecimalFormat;
-import java.util.Calendar;
 import java.util.List;
 
 public class Message {

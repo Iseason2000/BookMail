@@ -355,10 +355,14 @@ public class SqlManager {
         ResultSet rs = mailBoxesStmt.executeQuery("SELECT * FROM " + playerName + ";");
         while (rs.next()) {
             Mail mailData = new Mail();
+            int id = rs.getInt(1);
             String groupID = rs.getString(2);
             String theme = rs.getString(3);
-            String content = rs.getString(4);
             String attached = rs.getString(5);
+            String sender = rs.getString(6);
+            String sendTime = rs.getString(7);
+            boolean isRead = rs.getBoolean(8);
+            boolean isAccept = rs.getBoolean(9);
             if (!groupID.isEmpty()) {
                 String groupTheme = getSystemRecord("SystemMail", groupID, "主题");
                 if (groupTheme == null) {
@@ -366,11 +370,10 @@ public class SqlManager {
                     continue;
                 }
                 theme = groupTheme;
-                content = getSystemRecord("SystemMail", groupID, "内容");
                 attached = getSystemRecord("SystemMail", groupID, "附件");
             }
-            mailData.setData(rs.getInt(1), rs.getString(2), theme, content, attached, rs.getString(6), rs.getString(7), Boolean.parseBoolean(rs.getString(8)), Boolean.parseBoolean(rs.getString(9)));
-
+            // 预览不需要内容
+            mailData.setData(id, groupID, theme, "", attached, sender, sendTime, isRead, isAccept);
             mailList.add(mailData);
         }
         return mailList;
