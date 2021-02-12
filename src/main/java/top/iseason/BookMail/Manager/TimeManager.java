@@ -8,6 +8,7 @@ import top.iseason.BookMail.Util.Tools;
 import top.iseason.BookMail.command.MailSendGroupCommand;
 import top.iseason.BookMail.command.MailSendOnTimeCommand;
 import top.iseason.BookMail.myclass.Mail;
+import top.iseason.BookMail.myclass.Task;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,35 +41,32 @@ public class TimeManager extends BukkitRunnable {
 
     public void setNextTasks() {
         try {
-            ResultSet taskSet = SqlManager.getTaskList();
+            List<Task> taskList = SqlManager.getTaskList();
             String groupID = null;
             LocalDateTime time = null;
-            while (taskSet.next()) {
+            for (Task task : taskList) {
                 if (groupID == null) {
-                    groupID = taskSet.getString(2);
-                    String type = taskSet.getString(4);
-                    String sendTimeString = taskSet.getString(5);
-                    String taskTimeString = taskSet.getString(6);
-                    time = getNextTime(type, sendTimeString, taskTimeString);
-                    taskList.put(time, groupID);
+                    groupID = task.groupID;
+                    time = getNextTime(task.type, task.sendTime, task.addTime);
+                    this.taskList.put(time, groupID);
                     continue;
                 }
-                String group = taskSet.getString(2);
-                String type = taskSet.getString(4);
-                String sendTimeString = taskSet.getString(5);
-                String taskTimeString = taskSet.getString(6);
+                String group = task.groupID;
+                String type = task.type;
+                String sendTimeString = task.sendTime;
+                String taskTimeString = task.addTime;
                 LocalDateTime taskTime = getNextTime(type, sendTimeString, taskTimeString);
                 if (taskTime != null && time != null)
                     if (taskTime.isBefore(time)) {
-                        taskList.remove(time);
+                        this.taskList.remove(time);
                         time = taskTime;
                         groupID = group;
-                        taskList.put(taskTime, groupID);
+                        this.taskList.put(taskTime, groupID);
                     } else if (taskTime.isEqual(time)) {
-                        taskList.put(taskTime, groupID);
+                        this.taskList.put(taskTime, groupID);
                     }
             }
-            if (taskList.isEmpty()) {
+            if (this.taskList.isEmpty()) {
                 Message.sendLog("&d定时任务: &a已无定时任务！&6");
                 this.cancel();
             } else {
@@ -76,7 +74,7 @@ public class TimeManager extends BukkitRunnable {
                     BookMailPlugin.setTimeManager(new TimeManager());
                     return;
                 }
-                Set<LocalDateTime> localDateTimes = taskList.keySet();
+                Set<LocalDateTime> localDateTimes = this.taskList.keySet();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 Message.sendLog("&d定时任务: &a下次定时任务将在&6 " + localDateTimes.iterator().next().format(formatter) + "&a 运行!");
             }
@@ -85,7 +83,7 @@ public class TimeManager extends BukkitRunnable {
         }
     }
 
-    private static LocalDateTime getNextTime(String type, String timeString, String taskTimeString) {
+    public static LocalDateTime getNextTime(String type, String timeString, String taskTimeString) {
         if (type.equals("once")) {
             return Tools.formatDataTimeString(timeString, "yyyy-MM-dd-HH:mm:ss");
         }

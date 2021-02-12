@@ -56,21 +56,8 @@ public class OpenMailCommand extends SimpleSubCommand {
         return;
         }
         openMailBox(player);
-
-//        Player player = (Player) sender;
-//        ItemStack book = new ItemStack(Material.WRITTEN_BOOK,1);
-//        openBook(book, player);
     }
-//    @Override
-//    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-//        if (args.length == 1) {
-//            List<String> list = new ArrayList<>(Arrays.asList("create", "help"));
-//            list.removeIf(s -> !s.startsWith(args[0].toLowerCase()));
-//            return list;
-//        } else {
-//            return null;
-//        }
-//    }
+
     public static void openMailBox(Player player){
         new BukkitRunnable() {
             @Override

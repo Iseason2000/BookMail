@@ -4,10 +4,12 @@ import org.bukkit.ChatColor;
 import top.iseason.BookMail.BookMailPlugin;
 import top.iseason.BookMail.myclass.Mail;
 import top.iseason.BookMail.Util.Tools;
+import top.iseason.BookMail.myclass.Task;
 
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import static top.iseason.BookMail.Util.Message.sendLog;
 
@@ -92,6 +94,12 @@ public class SqlManager {
         return systemStmt.executeQuery("SELECT * FROM LoginTime;");
     }
 
+    public static Object getPackageValue(String cdk, String column) throws SQLException {
+        ResultSet rs = systemStmt.executeQuery("SELECT * FROM PackageList WHERE 包裹ID=\"" + cdk + "\";");
+        if (rs.isClosed()) return null;
+        return rs.getObject(column);
+    }
+
     public static String addPackage(String zipString, int num, String owner) {
         String cdk = Tools.getCDK(11);
         String sql = "INSERT INTO PackageList"
@@ -108,11 +116,25 @@ public class SqlManager {
         return null;
     }
 
-    public static String getPackageZipString(String cdk) throws SQLException {
+    public static String getPackageZipString(String playerName, String cdk) throws SQLException {
         if (!isRecordExist(0, "PackageList", "包裹ID", cdk)) return null;
         ResultSet rs = systemStmt.executeQuery("SELECT * FROM PackageList WHERE 包裹ID=\"" + cdk + "\";");
-        int count = rs.getInt(3);
         String zipString = rs.getString(2);
+        int count = rs.getInt(3);
+        ResultSet grs = systemStmt.executeQuery("SELECT * FROM SystemMail WHERE 附件=\"" + cdk + "\";");
+        if (!grs.isClosed()) { //是群发的
+            String groupID = grs.getString(2);
+            ResultSet prs = mailBoxesStmt.executeQuery("SELECT * FROM " + playerName + " WHERE 群发ID=\"" + groupID + "\";");
+            if (prs.isClosed()) return null;//群发列表里没有这个人
+            if (prs.getBoolean(9)) return null;//领过了
+            addSystemMailAcceptCount(cdk);
+            setPlayerMailIsAccept(playerName, prs.getInt(1));
+        } else {
+            ResultSet prs = mailBoxesStmt.executeQuery("SELECT * FROM " + playerName + " WHERE 附件=\"" + cdk + "\";");
+            if (prs.isClosed()) return null;//群发列表里没有这个人
+            if (prs.getBoolean(9)) return null;//领过了
+            setPlayerMailIsAccept(playerName, cdk);
+        }
         if (count == 1) {
             removePackage(cdk);
         } else if (count > 1) {
@@ -195,8 +217,19 @@ public class SqlManager {
 
     }
 
-    public static ResultSet getTaskList() throws SQLException {
-        return systemStmt.executeQuery("SELECT * FROM OnTimeTask;");
+    public static List<Task> getTaskList() throws SQLException {
+        List<Task> tasks = new ArrayList<>();
+        ResultSet taskList = systemStmt.executeQuery("SELECT * FROM OnTimeTask;");
+        while (taskList.next()) {
+            Task task = new Task();
+            task.groupID = taskList.getString(2);
+            task.groupArg = taskList.getString(3);
+            task.type = taskList.getString(4);
+            task.sendTime = taskList.getString(5);
+            task.addTime = taskList.getString(6);
+            tasks.add(task);
+        }
+        return tasks;
     }
 
     public static String getTaskString(String groupID, String column) throws SQLException {
@@ -224,6 +257,25 @@ public class SqlManager {
             mail.groupID = rs.getString(2);
             mail.sender = rs.getString(7);
             mail.time = rs.getString(8);
+            mails.add(mail);
+        }
+        return mails;
+    }
+
+    public static ArrayList<Mail> getSystemMails() throws SQLException {
+        String sql = "SELECT * FROM SystemMail;";
+        ResultSet rs = systemStmt.executeQuery(sql);
+        ArrayList<Mail> mails = new ArrayList<>();
+        while (rs.next()) {
+            Mail mail = new Mail();
+            mail.groupID = rs.getString(2);
+            mail.type = rs.getString(3);
+            mail.theme = rs.getString(4);
+            mail.attached = rs.getString(6);
+            mail.sender = rs.getString(7);
+            mail.time = rs.getString(8);
+            mail.readCount = rs.getInt(9);
+            mail.acceptCount = rs.getInt(10);
             mails.add(mail);
         }
         return mails;
@@ -319,10 +371,9 @@ public class SqlManager {
     }
 
     public static String getSystemRecord(String tableName, String groupID, String value) {
-        String sql = "SELECT * FROM " + tableName + " WHERE 群发ID=\"" + groupID + "\";";
         try {
-            ResultSet rs = systemStmt.executeQuery(sql);
-            return rs.getString(value);
+            ResultSet rs = systemStmt.executeQuery("SELECT " + value + " FROM " + tableName + " WHERE 群发ID=\"" + groupID + "\";");
+            return rs.getString(1);
         } catch (SQLException throwables) {
             return null;
         }
@@ -334,13 +385,19 @@ public class SqlManager {
     }
 
     public static void setPlayerMailIsAccept(String playerName, int id) throws SQLException {
-        mailBoxesStmt.executeUpdate("UPDATE " + playerName.trim() + " SET 已领取 = 1 WHERE ID=" + id + ";");
+        mailBoxesStmt.executeUpdate("UPDATE " + playerName.trim() + " SET 已领取 = 1 WHERE ID=\"" + id + "\";");
         mailBoxesConnection.commit();
     }
 
-    public static void addSystemMailAcceptCount(String groupID) throws SQLException {
-        int oldAcceptCount = Integer.parseInt(getSystemRecord("SystemMail", groupID, "领取数"));
-        systemStmt.executeUpdate("UPDATE SystemMail SET 领取数 = " + (++oldAcceptCount) + " WHERE 群发ID=\"" + groupID + "\";");
+    public static void setPlayerMailIsAccept(String playerName, String cdk) throws SQLException {
+        mailBoxesStmt.executeUpdate("UPDATE " + playerName.trim() + " SET 已领取 = 1 WHERE 附件=\"" + cdk + "\";");
+        mailBoxesConnection.commit();
+    }
+
+    public static void addSystemMailAcceptCount(String packageID) throws SQLException {
+        ResultSet rs = systemStmt.executeQuery("SELECT * FROM SystemMail WHERE 附件=\"" + packageID + "\";");
+        int oldAcceptCount = rs.getInt(10);
+        systemStmt.executeUpdate("UPDATE SystemMail SET 领取数 = " + (++oldAcceptCount) + " WHERE 附件=\"" + packageID + "\";");
         systemConnection.commit();
     }
 

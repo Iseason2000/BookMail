@@ -63,9 +63,7 @@ public class PackageCommand extends SimpleSubCommand {
             default:
                 showHelp(player);
         }
-
     }
-
     private static void createCommand(Player player) {
         if (!PackageManager.contains(player)) {
             Package a = new Package(54);
@@ -123,7 +121,7 @@ public class PackageCommand extends SimpleSubCommand {
     }
 
     private static void getPackage(Player player, String cdk) {
-        List<ItemStack> itemList = PackageManager.getPackageItemListFromSql(cdk);
+        List<ItemStack> itemList = PackageManager.getPackageItemListFromSql(player.getName(), cdk);
         if (itemList == null) return;
         for (ItemStack item : itemList) {
             HashMap<Integer, ItemStack> map = player.getInventory().addItem(item);

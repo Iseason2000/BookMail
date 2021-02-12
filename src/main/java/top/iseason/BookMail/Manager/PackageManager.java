@@ -41,10 +41,10 @@ public class PackageManager {
         return true;
     }
 
-    public static List<ItemStack> getPackageItemListFromSql(String cdk) {
+    public static List<ItemStack> getPackageItemListFromSql(String playerName, String cdk) {
         String zipString;
         try {
-            zipString = SqlManager.getPackageZipString(cdk);
+            zipString = SqlManager.getPackageZipString(playerName, cdk);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return null;
