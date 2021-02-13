@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("ALL")
 public class PackageCommand extends SimpleSubCommand {
 
     public PackageCommand(String command) {
@@ -36,14 +37,28 @@ public class PackageCommand extends SimpleSubCommand {
             return;
         }
         Player player = (Player) sender;
+        if (!BookMailPlugin.getConfigManager().isPlayerUse() && !player.isOp()) {
+            Message.send(player, "&c你没有使用该命令的权限!");
+            return;
+        }
         if (args.length == 0) {
             showHelp(player);
             return;
         }
         switch (args[0]) {
             case "create":
-                createCommand(player);
-                player.openInventory(Objects.requireNonNull(PackageManager.getPackage(player)).getInventory());
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (!player.isOp())
+                            if (PackageManager.getPackageCount(player.getName()) >= BookMailPlugin.getConfigManager().getMaxPackageCount()) {
+                                Message.send(player, "&e你的包裹已达上限，请先删除");
+                                return;
+                            }
+                        createCommand(player);
+                        player.openInventory(Objects.requireNonNull(PackageManager.getPackage(player)).getInventory());
+                    }
+                }.run();
                 break;
             case "edit":
                 editCommand(player);
@@ -89,15 +104,16 @@ public class PackageCommand extends SimpleSubCommand {
 
     private static void createCommand(Player player) {
         if (!PackageManager.contains(player)) {
-            Package a = new Package(54);
+            Package a = new Package();
             PackageManager.addPackage(player, a);
+            int m = BookMailPlugin.getConfigManager().getPackageTime();
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     if (PackageManager.contains(player))
-                        Message.send(player, ChatColor.YELLOW + "一分钟后将删除包裹，请尽快打包包裹!");
+                        Message.send(player, ChatColor.YELLOW + "20秒后将删除包裹，请尽快打包包裹!");
                 }
-            }.runTaskLater(BookMailPlugin.getInstance(), 4800);//20tick 1秒 此处4分钟
+            }.runTaskLater(BookMailPlugin.getInstance(), m * 1200 - 400);//20tick 1秒 此处4分钟
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -106,9 +122,9 @@ public class PackageCommand extends SimpleSubCommand {
                         Message.send(player, ChatColor.RED + "未打包的包裹已删除!");
                     }
                 }
-            }.runTaskLater(BookMailPlugin.getInstance(), 6000);//20tick 1秒 此处5分钟
+            }.runTaskLater(BookMailPlugin.getInstance(), m * 1200);//20tick 1秒 此处5分钟
             Message.send(player, ChatColor.GREEN + "包裹创建成功，输入:" + ChatColor.GOLD + "/BookMail package edit " + ChatColor.RED + "再次编辑");
-            Message.send(player, ChatColor.YELLOW + "5分钟后没打包的包裹将自动删除，请尽快打包包裹!");
+            Message.send(player, ChatColor.YELLOW + String.valueOf(m) + "分钟后没打包的包裹将自动删除，请尽快打包包裹!");
         } else {
             Message.send(player, ChatColor.YELLOW + "你已经有一个包裹了，请先将其打包发送再创建");
             Message.send(player, ChatColor.GREEN + "输入/BookMail package build " + ChatColor.GOLD + "打包包裹。");
@@ -132,10 +148,14 @@ public class PackageCommand extends SimpleSubCommand {
         }
         Package p = PackageManager.getPackage(player);
         if (p == null) return;
-        p.update();
         if (p.getSize() == 0) {
             Message.send(player, ChatColor.YELLOW + "你的包裹是空的，请先放入东西！");
             Message.send(player, ChatColor.GREEN + "输入/BookMail package edit " + ChatColor.GOLD + "修改包裹。");
+            return;
+        }
+        if (!p.update() && !player.isOp()) {
+            Message.send(player, "&e包裹的物品超出上限:&c" + p.getSize() + "&e/" + p.getMaxSize() + "&e个");
+            return;
         }
         if (!PackageManager.buildPackage(player, num)) {
             Message.send(player, ChatColor.RED + "创建包裹失败，请重试或减少物品！");

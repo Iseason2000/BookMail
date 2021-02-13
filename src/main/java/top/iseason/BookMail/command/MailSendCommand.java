@@ -27,6 +27,11 @@ public class MailSendCommand extends SimpleSubCommand {
             return;
         }
         Player player = (Player) sender;
+        if(!BookMailPlugin.getConfigManager().isPlayerUse() && ! player.isOp()) {
+            Message.send(player,"&c你没有使用该命令的权限!");
+            return;
+        }
+
         if (args.length == 0) {
             Message.send(player, ChatColor.YELLOW + "请填写需要发送的人！");
             Message.send(player, ChatColor.GREEN + "/bookmail send [玩家]");

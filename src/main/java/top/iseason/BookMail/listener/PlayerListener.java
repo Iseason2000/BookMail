@@ -46,6 +46,15 @@ public class PlayerListener implements Listener {
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
+                try {
+                    int unRead = SqlManager.getRecordValueCount(1, name, "已阅读", 0);
+                    if (unRead > 0) {
+                        Message.send(event.getPlayer(), "&e你有 &c" + unRead + "&e 封 未读邮件! 输入:&b/bookmail open 查看");
+                    } else {
+                        Message.send(event.getPlayer(), "&a没有未读邮件!");
+                    }
+                } catch (SQLException ignored) {
+                }
             }
         }.runTaskAsynchronously(BookMailPlugin.getInstance());
     }

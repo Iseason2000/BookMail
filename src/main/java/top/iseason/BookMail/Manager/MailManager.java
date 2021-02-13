@@ -1,5 +1,6 @@
 package top.iseason.BookMail.Manager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,6 +31,9 @@ public class MailManager {
                 if (!SqlManager.addPlayerMail(name, mail)) {
                     noPlayerMailList.add(name);
                 }
+                Player player = Bukkit.getPlayer(name);
+                if (player != null)
+                    Message.send(player, "&a收到一封新邮件!输入:&b/BookMail open &e查看");
             } catch (SQLException throwables) {
                 noPlayerMailList.add(name);
                 throwables.printStackTrace();
@@ -41,6 +45,9 @@ public class MailManager {
     public static void sendMailtoPlayer(Mail mail, String playerName) {
         try {
             SqlManager.addPlayerMail(playerName, mail);
+            Player player = Bukkit.getPlayer( playerName);
+            if (player != null)
+                Message.send(player, "&a收到一封新邮件!输入:&b/BookMail open &e查看");
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

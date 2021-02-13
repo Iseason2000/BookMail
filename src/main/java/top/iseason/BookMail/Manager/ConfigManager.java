@@ -9,23 +9,54 @@ public class ConfigManager {
     BookMailPlugin plugin;
     FileConfiguration config;
     ItemStack openMailItem;
-    public ConfigManager(BookMailPlugin plugin){
+    int maxPackageCount;
+    int maxPackageSize;
+    int packageTime;
+    boolean isPlayerUse;
+
+    public ConfigManager(BookMailPlugin plugin) {
         this.plugin = plugin;
+        reload();
+    }
+    public void reload(){
+        plugin.reloadConfig();
         config = plugin.getConfig();
         String itemString = config.getString("邮箱物品");
-        if(itemString==null)
-            openMailItem=null;
+        if (itemString == null)
+            openMailItem = null;
         else
             openMailItem = ItemTranslator.zipStringToItem(itemString);
+        maxPackageSize = config.getInt("玩家包裹最大物品数");
+        maxPackageCount = config.getInt("玩家最大包裹数");
+        packageTime = config.getInt("临时包裹时间");
+        isPlayerUse = config.getBoolean("玩家是否可以发邮件");
     }
+
     public ItemStack getOpenMailItem() {
         return openMailItem;
     }
 
+    public int getMaxPackageSize() {
+        return maxPackageSize;
+    }
+
     public void setOpenMailItem(ItemStack openMailItem) {
         this.openMailItem = openMailItem;
-        config.set("邮箱物品",ItemTranslator.itemToZipString(openMailItem));
+        config.set("邮箱物品", ItemTranslator.itemToZipString(openMailItem));
         plugin.saveConfig();
     }
+
+    public int getMaxPackageCount() {
+        return maxPackageCount;
+    }
+
+    public int getPackageTime() {
+        return packageTime;
+    }
+
+    public boolean isPlayerUse() {
+        return isPlayerUse;
+    }
+
 
 }

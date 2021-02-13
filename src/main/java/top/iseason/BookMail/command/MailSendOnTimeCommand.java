@@ -40,6 +40,7 @@ public class MailSendOnTimeCommand extends SimpleSubCommand {
         Player player = (Player) sender;
         if (!player.isOp()) {
             Message.send(player, ChatColor.RED + "你没有此命令的使用权限！");
+            return;
         }
         int argsLength = args.length;
         if (argsLength != 3) {

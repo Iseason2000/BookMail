@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import top.iseason.BookMail.BookMailPlugin;
 import top.iseason.BookMail.Util.ItemTranslator;
 
 import java.util.ArrayList;
@@ -14,16 +15,15 @@ import java.util.regex.Pattern;
 
 
 public class Package {
-    private int maxSize; //todo:配置设置最大
+    private final int maxSize;
     private int size = 0;
     private final PackageInventory itemList;
-
-    public Package(int maxSize) {
-        this.maxSize = maxSize;
+    public Package() {
         itemList = new PackageInventory();
+        maxSize = BookMailPlugin.getConfigManager().getMaxPackageSize();
     }
 
-    public void update() { //统计包裹所有物品数量（包括潜影盒内）
+    public Boolean update() { //统计包裹所有物品数量（包括潜影盒内）
         int count = 0;
         for (ItemStack item : itemList.getInventory().getContents()) {
             if (item == null) continue;
@@ -37,7 +37,12 @@ public class Package {
             count++;
         }
         size = count;
+        return size <= maxSize;
     }
+    public int getMaxSize() {
+        return maxSize;
+    }
+
     public List<ItemStack> getItems(){
         List<ItemStack> items = new ArrayList<>();
         for(ItemStack item : itemList.inventory.getContents()){

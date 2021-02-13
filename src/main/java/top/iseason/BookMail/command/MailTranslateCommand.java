@@ -5,6 +5,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import top.iseason.BookMail.BookMailPlugin;
+import top.iseason.BookMail.Util.Message;
 import top.iseason.BookMail.Util.SimpleSubCommand;
 import top.iseason.BookMail.myclass.BookTranslator;
 
@@ -22,6 +24,10 @@ public class MailTranslateCommand extends SimpleSubCommand {
             return;
         }
         Player player = (Player) sender;
+        if(!BookMailPlugin.getConfigManager().isPlayerUse() && ! player.isOp()) {
+            Message.send(player,"&c你没有使用该命令的权限!");
+            return;
+        }
         ItemStack handItem = player.getInventory().getItemInMainHand().clone();
         new BukkitRunnable() {
             @Override

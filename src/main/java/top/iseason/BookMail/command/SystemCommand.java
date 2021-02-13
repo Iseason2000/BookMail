@@ -2,6 +2,7 @@ package top.iseason.BookMail.command;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +28,7 @@ public class SystemCommand extends SimpleSubCommand {
         addSubCommand("systemMail");
         addSubCommand("taskList");
         addSubCommand("packageList");
+        addSubCommand("reload");
         addSubCommand("createMailboxes");
         setDescription("查看系统功能 [OP]");
     }
@@ -73,6 +75,10 @@ public class SystemCommand extends SimpleSubCommand {
                 if (args.length != 2) return;
                 createMailBoxes(player, args);
                 break;
+            case "reload":
+                BookMailPlugin.getConfigManager().reload();
+                Message.send(player, "&a配置已重载!");
+                break;
             default:
                 showHelp(player);
                 break;
@@ -100,7 +106,7 @@ public class SystemCommand extends SimpleSubCommand {
             @Override
             public void run() {
                 ItemStack handItem = player.getInventory().getItemInMainHand();
-                if (handItem.getType().isAir()) return;
+                if (handItem.getType() == Material.AIR) return;
                 BookMailPlugin.getConfigManager().setOpenMailItem(handItem);
                 Message.send(player, ChatColor.GREEN + "操作成功!");
             }
@@ -210,6 +216,7 @@ public class SystemCommand extends SimpleSubCommand {
         helpMessage.add("&b/BookMail &dsystem &6systemMail&e    打开&9系统邮箱&6管理界面");
         helpMessage.add("&b/BookMail &dsystem &6taskList&e       打开&c定时任务&6管理界面");
         helpMessage.add("&b/BookMail &dsystem &6packageList&e  打开&d包裹&6管理界面");
+        helpMessage.add("&b/BookMail &dsystem &6reload&e  &d重载配置");
         helpMessage.add("&b/BookMail &dsystem &6createMailboxes [online/offline/all]");
         helpMessage.add("                                  &e为指定玩家组创建邮箱[在线/离线/全部]");
         helpMessage.add(" ");

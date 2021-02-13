@@ -38,6 +38,13 @@ public class PackageManager {
             return false;
         }
     }
+    public static int getPackageCount(String name){
+        try {
+            return SqlManager.getRecordValueCount(0,"PackageList","拥有者",name);
+        } catch (SQLException throwables) {
+            return 0;
+        }
+    }
 
     public static Package getPackage(Player player) {
         if (tempPlayerPackage.containsKey(player.getName()))

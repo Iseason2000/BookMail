@@ -173,6 +173,17 @@ public class SqlManager {
         ResultSet resultSet = statement.executeQuery(sql);
         return resultSet.getInt(1);
     }
+    public static int getRecordValueCount(int database, String tableName, String column,int value) throws SQLException {
+        Statement statement;
+        if (database == 1) {
+            statement = mailBoxesStmt;
+        } else {
+            statement = systemStmt;
+        }
+        String sql = "SELECT COUNT(*) FROM " + tableName.trim() + " where " + column.trim() + "=" + value + ";";
+        ResultSet resultSet = statement.executeQuery(sql);
+        return resultSet.getInt(1);
+    }
 
     public static void removePackage(String cdk) throws SQLException {
         String sql = "DELETE from PackageList where 包裹ID=\"" + cdk + "\";";
