@@ -34,8 +34,8 @@ public abstract class SimpleSubCommand {
         this.description = description;
     }
 
-    public void setPermission(String permission) {
-        this.permission = permission;
-    }
+//    public void setPermission(String permission) {
+//        this.permission = permission;
+//    }
 
 }

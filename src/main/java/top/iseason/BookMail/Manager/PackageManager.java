@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import top.iseason.BookMail.Util.ItemTranslator;
+import top.iseason.BookMail.command.PackageCommand;
 import top.iseason.BookMail.myclass.Package;
 
 import java.sql.SQLException;
@@ -22,8 +23,20 @@ public class PackageManager {
         tempPlayerPackage.put(player.getName(), pack);
     }
 
-    public static void removePackage(Player player) {
+    public static void removeTempPackage(Player player) {
         tempPlayerPackage.remove(player.getName());
+    }
+
+    public static Boolean removePackage(Player player, String cdk, Boolean isOP) {
+        try {
+            if (PackageCommand.getPackage(player, cdk, isOP))
+                SqlManager.removePackage(cdk);
+            else return false;
+            return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
     }
 
     public static Package getPackage(Player player) {
@@ -41,10 +54,10 @@ public class PackageManager {
         return true;
     }
 
-    public static List<ItemStack> getPackageItemListFromSql(String playerName, String cdk) {
+    public static List<ItemStack> getPackageItemListFromSql(String playerName, String cdk, Boolean isOP) {
         String zipString;
         try {
-            zipString = SqlManager.getPackageZipString(playerName, cdk);
+            zipString = SqlManager.getPackageZipString(playerName, cdk, isOP);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return null;

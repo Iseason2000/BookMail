@@ -10,7 +10,6 @@ import top.iseason.BookMail.command.MailSendOnTimeCommand;
 import top.iseason.BookMail.myclass.Mail;
 import top.iseason.BookMail.myclass.Task;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -36,6 +35,17 @@ public class TimeManager extends BukkitRunnable {
         }
         if (taskList.isEmpty()) {
             setNextTasks();
+        }
+    }
+
+    public static Boolean removeTask(String groupID) {
+        try {
+            SqlManager.removeTask(groupID);
+            BookMailPlugin.getTimeManager().taskList = new HashMap<>();
+            BookMailPlugin.getTimeManager().setNextTasks();
+            return true;
+        } catch (SQLException throwables) {
+            return false;
         }
     }
 
@@ -190,7 +200,7 @@ public class TimeManager extends BukkitRunnable {
                 Message.sendLog("&c定时发送失败，没有匹配的玩家！");
                 return;
             }
-            List<String> failureList = MailManager.sendMailtoPlayers(systemMail, players);
+            List<String> failureList = MailManager.sendMailtoPlayers(systemMail, players, "");
             int mailCount = players.length;
             int failureCount = failureList.size();
 

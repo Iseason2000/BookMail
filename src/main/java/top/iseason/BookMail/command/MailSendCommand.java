@@ -4,6 +4,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import top.iseason.BookMail.BookMailPlugin;
 import top.iseason.BookMail.Manager.MailManager;
 import top.iseason.BookMail.Util.Message;
 import top.iseason.BookMail.Util.SimpleSubCommand;
@@ -33,7 +35,12 @@ public class MailSendCommand extends SimpleSubCommand {
         if (!player.isOp() && args.length > 1) return;
         Mail mail = MailManager.getMailInHand(player);
         if (mail == null) return;
-        sendMail(player, mail, args);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                sendMail(player, mail, args);
+            }
+        }.runTaskAsynchronously(BookMailPlugin.getInstance());
         if (!player.isOp()) {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item.getAmount() == 1) {
@@ -46,7 +53,7 @@ public class MailSendCommand extends SimpleSubCommand {
     }
 
     public static void sendMail(Player player, Mail mail, String[] players) {
-        List<String> failureList = MailManager.sendMailtoPlayers(mail, players);
+        List<String> failureList = MailManager.sendMailtoPlayers(mail, players,player.getName());
         int mailCount = players.length;
         int failureCount = failureList.size();
         if (failureCount > 0) {

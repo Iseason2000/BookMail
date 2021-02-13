@@ -14,12 +14,14 @@ public class MainCommand extends SimpleCommand implements CommandExecutor {
     @Override
     public void registerSubCommands() {
         registerSubCommand(new OpenMailCommand("open"));
+        registerSubCommand(new RemoveMailCommand("remove"));
         registerSubCommand(new PackageCommand("package"));
         registerSubCommand(new MailTranslateCommand("translate"));
         registerSubCommand(new MailSendCommand("send"));
         registerSubCommand(new MailSendGroupCommand("sendGroup"));
         registerSubCommand(new MailSendOnTimeCommand("sendOnTime"));
         registerSubCommand(new SystemCommand("system"));
+
     }
 
     @Override

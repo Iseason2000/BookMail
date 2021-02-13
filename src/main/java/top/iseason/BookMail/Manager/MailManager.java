@@ -12,7 +12,6 @@ import top.iseason.BookMail.myclass.Task;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -20,9 +19,13 @@ import java.util.List;
 
 public class MailManager {
     //发送邮件给n个人，返回发送失败的玩家名字(不存在表或者数据库操作异常)
-    public static List<String> sendMailtoPlayers(Mail mail, String[] playerNames) {
+    public static List<String> sendMailtoPlayers(Mail mail, String[] playerNames, String ignoreName) {
         List<String> noPlayerMailList = new ArrayList<>();
         for (String name : playerNames) {
+            if (name.equals(ignoreName)) {
+                noPlayerMailList.add(name);
+                continue;
+            }
             try {
                 if (!SqlManager.addPlayerMail(name, mail)) {
                     noPlayerMailList.add(name);
@@ -35,12 +38,19 @@ public class MailManager {
         return noPlayerMailList;
     }
 
-    public static Boolean sendMailtoPlayer(Mail mail, String playerName) {
+    public static void sendMailtoPlayer(Mail mail, String playerName) {
         try {
             SqlManager.addPlayerMail(playerName, mail);
-            return true;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+        }
+    }
+
+    public static Boolean removePlayerMail(String playerName, int id) {
+        try {
+            SqlManager.removePlayerMail(playerName, id);
+            return true;
+        } catch (SQLException throwables) {
             return false;
         }
     }
@@ -118,8 +128,8 @@ public class MailManager {
                 String mailPart1 = "{\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\""
                         + titleInfo + "\"}},\"text\":\"" + mailTitle + "\\\\n\"},";
                 String mailPart2 = "{\"text\":\"§7---------\"},";
-                String mailPart3 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail remove " + mail.ID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§c删除该邮件\"}},\"text\":\"§4[删除] \"},";
-                String mailPart4 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail open " + mail.ID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§a阅读该邮件\"}},\"text\":\"§2[打开]\\\\n\\\\n§r\"}";
+                String mailPart3 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail system systemMail remove " + mail.groupID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§c删除该邮件\"}},\"text\":\"§4[删除] \"},";
+                String mailPart4 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail system systemMail open " + mail.groupID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§a阅读该邮件\"}},\"text\":\"§2[打开]\\\\n\\\\n§r\"}";
                 String mailString = mailPart1 + mailPart2 + mailPart3 + mailPart4;
                 mailStringList.add(mailString);
             }
@@ -156,12 +166,44 @@ public class MailManager {
                 String mailPart1 = "{\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\""
                         + titleInfo + "\"}},\"text\":\"" + mailTitle + "\\\\n\"},";
                 String mailPart2 = "{\"text\":\"§7--------------\"},";
-                String mailPart3 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail open "
+                String mailPart3 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail system taskList remove "
                         + task.groupID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§e点击取消任务\"}},\"text\":\"§4[取消]\\\\n\\\\n§r\"}";
                 String mailString = mailPart1 + mailPart2 + mailPart3;
                 taskStringList.add(mailString);
             }
             return getMailBoxItemStack(taskStringList);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ItemStack getPackageList(String playerName) {
+        try {
+            ResultSet packageList;
+            if (playerName == null)
+                packageList = SqlManager.getPackageList();
+            else
+                packageList = SqlManager.getPackageList(playerName);
+            if (packageList.isClosed()) return null;
+            ArrayList<String> packageStringList = new ArrayList<>();
+            while (packageList.next()) {
+                String cdk = packageList.getString(1);
+                int count = packageList.getInt(3);
+                String owner = packageList.getString(4);
+                String createTime = packageList.getString(5);
+                String titleInfo = "§b总数: §c" + count + "\\\\n§b创建者: §6"
+                        + owner + "\\\\n§b创建时间: §5" + createTime;
+                String mailTitle = "§0[ ".concat(cdk).concat("§0 ]§r");
+                String mailPart1 = "{\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\""
+                        + titleInfo + "\"}},\"text\":\"" + mailTitle + "\\\\n\"},";
+                String mailPart2 = "{\"text\":\"§7---------\"},";
+                String mailPart3 = "{\"clickEvent\":{\"action\":\"copy_to_clipboard\",\"value\":\"" + cdk + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§a点击复制cdk\"}},\"text\":\"§2[复制] \"},";
+                String mailPart4 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail package remove " + cdk + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§c删除该包裹\"}},\"text\":\"§4[删除]\\\\n\\\\n§r\"}";
+                String mailString = mailPart1 + mailPart2 + mailPart3 + mailPart4;
+                packageStringList.add(mailString);
+            }
+            return getMailBoxItemStack(packageStringList);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return null;

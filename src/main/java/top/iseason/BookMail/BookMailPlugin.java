@@ -20,9 +20,9 @@ import static top.iseason.BookMail.Util.Message.sendLog;
 
 public class BookMailPlugin extends JavaPlugin implements Listener {
     private static BookMailPlugin plugin;
-    private static PackageManager packageManager;
     private static TimeManager timeManager;
     private static ConfigManager configManager;
+
     public static BookMailPlugin getInstance() {
         return plugin;
     }
@@ -51,11 +51,10 @@ public class BookMailPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new PackageListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
         sendLog(ChatColor.GREEN + "插件已启用! " + ChatColor.GOLD + "作者:" + ChatColor.BLUE + "Iceason");
-        packageManager = new PackageManager();
+        new PackageManager();
         timeManager = new TimeManager();
         configManager = new ConfigManager(this);
     }
-
 
     public void onDisable() {
         try {
@@ -67,10 +66,6 @@ public class BookMailPlugin extends JavaPlugin implements Listener {
         sendLog(ChatColor.RED + "插件已注销!");
     }
 
-    public static PackageManager getPackageManager() {
-        return packageManager;
-    }
-
     public static TimeManager getTimeManager() {
         return timeManager;
     }
@@ -78,6 +73,7 @@ public class BookMailPlugin extends JavaPlugin implements Listener {
     public static void setTimeManager(TimeManager timeManager) {
         BookMailPlugin.timeManager = timeManager;
     }
+
     public static ConfigManager getConfigManager() {
         return configManager;
     }

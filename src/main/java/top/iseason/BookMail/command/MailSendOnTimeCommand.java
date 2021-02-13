@@ -80,7 +80,7 @@ public class MailSendOnTimeCommand extends SimpleSubCommand {
                 else
                     Message.send(player, "&c邮件发送失败！");
             }
-        }.runTaskAsynchronously(BookMailPlugin.getInstance());
+        }.run();
     }
 
     public static void sendPeriod(Player player, String[] args) {
@@ -114,7 +114,7 @@ public class MailSendOnTimeCommand extends SimpleSubCommand {
                 } else
                     Message.send(player, "&c邮件发送失败！");
             }
-        }.runTaskAsynchronously(BookMailPlugin.getInstance());
+        }.run();
     }
 
     private static Boolean checkMailType(String mailTypeString) {
@@ -204,8 +204,8 @@ public class MailSendOnTimeCommand extends SimpleSubCommand {
         List<String> helpMessage = new ArrayList<>();
         helpMessage.add("&6&m+-------------+&9&l " + BookMailPlugin.getInstance().getName() + "&e - &a&lSendOnTime &6&m+-------------+");
         helpMessage.add(" ");
-        helpMessage.add("&b/BookMail sendOnTime" + " &6once    &c[参数] &a[邮件类型] " + "&e添加&6一次性&e定时邮件");
-        helpMessage.add("&b/BookMail sendOnTime" + " &6period  &c[参数] &a[邮件类型] " + "&e添加&6周期性&e定时邮件");
+        helpMessage.add("&b/BookMail &dsendOnTime" + " &6once    &c[参数] &a[邮件类型] " + "&e添加&6一次性&e定时邮件");
+        helpMessage.add("&b/BookMail &dsendOnTime" + " &6period  &c[参数] &a[邮件类型] " + "&e添加&6周期性&e定时邮件");
         helpMessage.add("&a参数说明: ");
         helpMessage.add("&6一次性&a-> &c具体时间&a 如:&e2021-02-12-12:00:00");
         helpMessage.add("&6周期性&a-> &c周期+时间点&a 如:&eday:2+12:00:00 &a为 &6每2天中午12点");

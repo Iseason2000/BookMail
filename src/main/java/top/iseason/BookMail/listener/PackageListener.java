@@ -14,6 +14,7 @@ public class PackageListener implements Listener {
         Player player = (Player) event.getPlayer();
         if (PackageManager.contains(player)) {
             Package a = PackageManager.getPackage(player);
+            if(a==null)return;
             a.update();
         }
     }

@@ -5,9 +5,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import top.iseason.BookMail.BookMailPlugin;
-import top.iseason.BookMail.myclass.BookTranslator;
 import top.iseason.BookMail.Util.SimpleSubCommand;
+import top.iseason.BookMail.myclass.BookTranslator;
 
 public class MailTranslateCommand extends SimpleSubCommand {
     MailTranslateCommand(String command) {
@@ -41,6 +40,6 @@ public class MailTranslateCommand extends SimpleSubCommand {
                 }
                 OpenMailCommand.openBook(newBook, player);
             }
-        }.runTaskAsynchronously(BookMailPlugin.getInstance());
+        }.run();
     }
 }

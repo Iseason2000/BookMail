@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class Package {
     private int maxSize; //todo:配置设置最大
     private int size = 0;
-    private PackageInventory itemList;
+    private final PackageInventory itemList;
 
     public Package(int maxSize) {
         this.maxSize = maxSize;

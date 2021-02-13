@@ -32,10 +32,10 @@ public abstract class SimpleCommand implements TabCompleter {
                 }
             }
         }
-        Message.send(sender, getHelpMessage(sender));
+        Message.send(sender, getHelpMessage());
     }
 
-    private List<String> getHelpMessage(CommandSender sender) {
+    private List<String> getHelpMessage() {
 
         BookMailPlugin plugin = BookMailPlugin.getInstance();
 

@@ -8,7 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import top.iseason.BookMail.BookMailPlugin;
 import top.iseason.BookMail.Manager.MailManager;
 import top.iseason.BookMail.Manager.SqlManager;
 import top.iseason.BookMail.Util.ItemTranslator;
@@ -52,21 +51,22 @@ public class OpenMailCommand extends SimpleSubCommand {
                         throwables.printStackTrace();
                     }
                 }
-            }.runTaskAsynchronously(BookMailPlugin.getInstance());
-        return;
+            }.run();
+            return;
         }
         openMailBox(player);
     }
 
-    public static void openMailBox(Player player){
+    public static void openMailBox(Player player) {
         new BukkitRunnable() {
             @Override
             public void run() {
                 ItemStack bookItem = MailManager.getPlayerMailBox(player.getName());
-                openBook(bookItem,player);
+                openBook(bookItem, player);
             }
-        }.runTaskAsynchronously(BookMailPlugin.getInstance());
+        }.run();
     }
+
     public static void openBook(ItemStack book, Player p) { //使玩家打开某本书(署名的)
         int slot = p.getInventory().getHeldItemSlot();
         ItemStack old = p.getInventory().getItem(slot);

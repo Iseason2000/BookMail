@@ -58,8 +58,8 @@ public final class BookTranslator {
 
     private void loadContents() {
         pages = new ArrayList<>();
-        String pagesPatternString = null;
-        String pagePatternString = null;
+        String pagesPatternString;
+        String pagePatternString;
         if (bookItem.getType().name().equals("BOOK_AND_QUILL")) {
             pagesPatternString = "pages:\\[([\\s\\S]*)][\\s\\S]*";
             pagePatternString = "\"([\\s\\S]*?)\"";
@@ -69,13 +69,6 @@ public final class BookTranslator {
             BookMeta bookMeta = (BookMeta)bookItem.getItemMeta();
             title = bookMeta.getTitle();
             author = bookMeta.getAuthor();
-            //取消使用nbt正则匹配
-//            Matcher titleMatcher = Pattern.compile("title:\"(.*?)\"").matcher(NbtString);
-//            Matcher authorMatcher = Pattern.compile("author:\"(.*?)\"").matcher(NbtString);
-//            if (titleMatcher.find())
-//                title = titleMatcher.group(1);
-//            if (authorMatcher.find())
-//                author = authorMatcher.group(1);
         }
         Pattern pagesPattern = Pattern.compile(pagesPatternString);
         Matcher pageMatcher = pagesPattern.matcher(NbtString);
@@ -107,22 +100,22 @@ public final class BookTranslator {
         String regularString = "[\\[|\\{|\\(][^\\(^\\[^\\{]+?[\\]|\\}|\\)][\\[|\\{|\\(][^\\)^\\]^\\}]+?[\\]|\\}|\\)]";
         String[] parts = splitWithDelimiters(content, regularString);
         StringBuilder newString = new StringBuilder();
-        String buildString = null;
-        int maxindex = parts.length;
-        for (int n = 0; n < maxindex; n++) {
+        String buildString ;
+        int maxIndex = parts.length;
+        for (int n = 0; n < maxIndex; n++) {
             String thisPart = parts[n];
             buildString = buildIfHover(thisPart);
-            if (tryAppend(buildString, newString, n, maxindex)) continue;
+            if (tryAppend(buildString, newString, n, maxIndex)) continue;
             buildString = buildIfOpenUrl(thisPart);
-            if (tryAppend(buildString, newString, n, maxindex)) continue;
+            if (tryAppend(buildString, newString, n, maxIndex)) continue;
             buildString = buildIfRunCommand(thisPart);
-            if (tryAppend(buildString, newString, n, maxindex)) continue;
+            if (tryAppend(buildString, newString, n, maxIndex)) continue;
             buildString = buildIfCopyToClipboard(thisPart);
-            if (tryAppend(buildString, newString, n, maxindex)) continue;
+            if (tryAppend(buildString, newString, n, maxIndex)) continue;
             buildString = buildIfPackage(thisPart);
-            if (tryAppend(buildString, newString, n, maxindex)) continue;
+            if (tryAppend(buildString, newString, n, maxIndex)) continue;
             buildString = "{\"text\":\"" + thisPart + "\"}";
-            tryAppend(buildString, newString, n, maxindex);
+            tryAppend(buildString, newString, n, maxIndex);
         }
         return newString.toString();
     }

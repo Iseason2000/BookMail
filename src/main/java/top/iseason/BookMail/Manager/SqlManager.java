@@ -50,7 +50,7 @@ public class SqlManager {
     public static boolean isTableExist(int database, String tableName) throws SQLException {
         boolean flag = false;
         String sql = "SELECT COUNT(*) FROM sqlite_master where type='table' and name='" + tableName.trim() + "'";
-        ResultSet set = null;
+        ResultSet set;
         if (database == 0) {
             set = systemStmt.executeQuery(sql); //0为系统
         } else {
@@ -100,6 +100,14 @@ public class SqlManager {
         return rs.getObject(column);
     }
 
+    public static ResultSet getPackageList() throws SQLException {
+        return systemStmt.executeQuery("SELECT * FROM PackageList;");
+    }
+
+    public static ResultSet getPackageList(String playerName) throws SQLException {
+        return systemStmt.executeQuery("SELECT * FROM PackageList WHERE 拥有者=\"" + playerName + "\";");
+    }
+
     public static String addPackage(String zipString, int num, String owner) {
         String cdk = Tools.getCDK(11);
         String sql = "INSERT INTO PackageList"
@@ -116,25 +124,29 @@ public class SqlManager {
         return null;
     }
 
-    public static String getPackageZipString(String playerName, String cdk) throws SQLException {
+    public static String getPackageZipString(String playerName, String cdk, Boolean isOP) throws SQLException {
         if (!isRecordExist(0, "PackageList", "包裹ID", cdk)) return null;
         ResultSet rs = systemStmt.executeQuery("SELECT * FROM PackageList WHERE 包裹ID=\"" + cdk + "\";");
         String zipString = rs.getString(2);
         int count = rs.getInt(3);
-        ResultSet grs = systemStmt.executeQuery("SELECT * FROM SystemMail WHERE 附件=\"" + cdk + "\";");
-        if (!grs.isClosed()) { //是群发的
-            String groupID = grs.getString(2);
-            ResultSet prs = mailBoxesStmt.executeQuery("SELECT * FROM " + playerName + " WHERE 群发ID=\"" + groupID + "\";");
-            if (prs.isClosed()) return null;//群发列表里没有这个人
-            if (prs.getBoolean(9)) return null;//领过了
-            addSystemMailAcceptCount(cdk);
-            setPlayerMailIsAccept(playerName, prs.getInt(1));
-        } else {
-            ResultSet prs = mailBoxesStmt.executeQuery("SELECT * FROM " + playerName + " WHERE 附件=\"" + cdk + "\";");
-            if (prs.isClosed()) return null;//群发列表里没有这个人
-            if (prs.getBoolean(9)) return null;//领过了
-            setPlayerMailIsAccept(playerName, cdk);
-        }
+        String name = (String) getPackageValue(cdk, "拥有者");
+        if (!isOP)
+            if (!(name != null && name.equals(playerName))) {//不是是拥有者
+                ResultSet grs = systemStmt.executeQuery("SELECT * FROM SystemMail WHERE 附件=\"" + cdk + "\";");
+                if (!grs.isClosed()) { //是群发的
+                    String groupID = grs.getString(2);
+                    ResultSet prs = mailBoxesStmt.executeQuery("SELECT * FROM " + playerName + " WHERE 群发ID=\"" + groupID + "\";");
+                    if (prs.isClosed()) return null;//群发列表里没有这个人
+                    if (prs.getBoolean(9)) return null;//领过了
+                    addSystemMailAcceptCount(cdk);
+                    setPlayerMailIsAccept(playerName, prs.getInt(1));
+                } else { //不是群发的
+                    ResultSet prs = mailBoxesStmt.executeQuery("SELECT * FROM " + playerName + " WHERE 附件=\"" + cdk + "\";");
+                    if (prs.isClosed()) return null;//这个人没有收到这个包裹
+                    if (prs.getBoolean(9)) return null;//领过了
+                    setPlayerMailIsAccept(playerName, cdk);
+                }
+            }
         if (count == 1) {
             removePackage(cdk);
         } else if (count > 1) {
@@ -291,6 +303,20 @@ public class SqlManager {
         return mail;
     }
 
+    public static Boolean removeSystemMail(String groupID) throws SQLException {
+        if (!isRecordExist(0, "SystemMail", "群发ID", groupID)) return false;
+        String sql = "DELETE from SystemMail where 群发ID=\"" + groupID + "\";";
+        systemStmt.executeUpdate(sql);
+        systemConnection.commit();
+        return true;
+    }
+
+    public static String getSystemMailContent(String groupID) throws SQLException {
+        String sql = "SELECT * FROM SystemMail WHERE 群发ID=\"" + groupID + "\";";
+        ResultSet rs = systemStmt.executeQuery(sql);
+        return rs.getString(5);
+    }
+
     public static boolean createPlayerMailBoxTable(String tableName) throws SQLException { //不区分大小写
         if (isTableExist(1, tableName)) return false;
         String sql = "CREATE TABLE " + tableName.trim() +
@@ -319,18 +345,6 @@ public class SqlManager {
         mailBoxesStmt.executeUpdate(sql);
         mailBoxesConnection.commit();
         return true;
-    }
-
-
-    public static void removeTable(int database, String tableName) throws SQLException {
-        String sql = "DROP TABLE IF EXISTS " + tableName.trim();
-        if (database == 0) {
-            systemStmt.executeUpdate(sql);
-            systemConnection.commit();
-        } else {
-            mailBoxesStmt.executeUpdate(sql);
-            mailBoxesConnection.commit();
-        }
     }
 
     public static void removePlayerMail(String tableName, int id) throws SQLException {
@@ -402,7 +416,9 @@ public class SqlManager {
     }
 
     public static void addSystemMailReadCount(String groupID) throws SQLException {
-        int oldReadCount = Integer.parseInt(getSystemRecord("SystemMail", groupID, "阅读数"));
+        String countString = getSystemRecord("SystemMail", groupID, "阅读数");
+        if (countString == null) return;
+        int oldReadCount = Integer.parseInt(countString);
         systemStmt.executeUpdate("UPDATE SystemMail SET 阅读数 = " + (++oldReadCount) + " WHERE 群发ID=\"" + groupID + "\";");
         systemConnection.commit();
     }

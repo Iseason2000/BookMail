@@ -244,11 +244,11 @@ public class MailSendGroupCommand extends SimpleSubCommand {
         List<String> helpMessage = new ArrayList<>();
         helpMessage.add("&6&m+-------------+&9&l " + BookMailPlugin.getInstance().getName() + "&e - &a&lSendGroup &6&m+-------------+");
         helpMessage.add(" ");
-        helpMessage.add("&b/BookMail sendGroup" + " &6online      " + "&e 向所有&6在线&e玩家的发送邮件");
-        helpMessage.add("&b/BookMail sendGroup" + " &6offline     " + "&e 向所有&9离线&e玩家的发送邮件");
-        helpMessage.add("&b/BookMail sendGroup" + " &6registered" + "&e 向所有&a注册&e的玩家发送邮件");
-        helpMessage.add("&b/BookMail sendGroup" + " &6new         " + "&e 向所有&b新注册&e的玩家发送邮件");
-        helpMessage.add("&b/BookMail sendGroup" + " &6loginTime   " + "&e 向指定&b最后登录时间&e的玩家发送邮件");
+        helpMessage.add("&b/BookMail &dsendGroup" + " &6online      " + "&e 向所有&6在线&e玩家的发送邮件");
+        helpMessage.add("&b/BookMail &dsendGroup" + " &6offline     " + "&e 向所有&9离线&e玩家的发送邮件");
+        helpMessage.add("&b/BookMail &dsendGroup" + " &6registered" + "&e 向所有&a注册&e的玩家发送邮件");
+        helpMessage.add("&b/BookMail &dsendGroup" + " &6new         " + "&e 向所有&b新注册&e的玩家发送邮件");
+        helpMessage.add("&b/BookMail &dsendGroup" + " &6loginTime   " + "&e 向指定&b最后登录时间&e的玩家发送邮件");
         helpMessage.add(" ");
         Message.send(player, helpMessage);
     }
