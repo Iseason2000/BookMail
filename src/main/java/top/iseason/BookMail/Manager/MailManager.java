@@ -45,7 +45,7 @@ public class MailManager {
     public static void sendMailtoPlayer(Mail mail, String playerName) {
         try {
             SqlManager.addPlayerMail(playerName, mail);
-            Player player = Bukkit.getPlayer( playerName);
+            Player player = Bukkit.getPlayer(playerName);
             if (player != null)
                 Message.send(player, "&a收到一封新邮件!输入:&b/BookMail open &e查看");
         } catch (SQLException throwables) {
@@ -88,27 +88,28 @@ public class MailManager {
         try {
             ArrayList<Mail> playerMails = SqlManager.getPlayerMails(playerName);
             ArrayList<String> mailStringList = new ArrayList<>();
-            if(!playerMails.isEmpty()){
-            for (Mail mail : playerMails) {
-                String theme = mail.theme;
-                String attach = "";
-                if (mail.attached.length() != 0) attach = "§e有附件✉\\\\n";
-                String titleInfo = mail.theme + "\\\\n" + attach + "§b发件人: §6" + mail.sender + "\\\\n" + "§b时间: §a" + mail.time;
-                int noColorLength = ChatColor.stripColor(theme).length();
-                if (noColorLength > 9) {
-                    int extraWordCount = noColorLength - 9;
-                    theme = theme.substring(0, theme.length() - extraWordCount).concat("...");
+            if (!playerMails.isEmpty()) {
+                for (Mail mail : playerMails) {
+                    String theme = mail.theme;
+                    String attach = "";
+                    if (mail.attached.length() != 0) attach = "§e有附件✉\\\\n";
+                    String titleInfo = mail.theme + "\\\\n" + attach + "§b发件人: §6" + mail.sender + "\\\\n" + "§b时间: §a" + mail.time;
+                    int noColorLength = ChatColor.stripColor(theme).length();
+                    if (noColorLength > 9) {
+                        int extraWordCount = noColorLength - 9;
+                        theme = theme.substring(0, theme.length() - extraWordCount).concat("...");
+                    }
+                    String mailTitle = "§0《".concat(theme).concat("§0》§r");
+                    if (!mail.isRead) mailTitle = "§6❀".concat(mailTitle);
+                    String mailPart1 = "{\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\""
+                            + titleInfo + "\"}},\"text\":\"" + mailTitle + "\\\\n\"},";
+                    String mailPart2 = "{\"text\":\"§7---------\"},";
+                    String mailPart3 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail remove " + mail.ID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§c删除该邮件\"}},\"text\":\"§4[删除] \"},";
+                    String mailPart4 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail open " + mail.ID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§a阅读该邮件\"}},\"text\":\"§2[打开]\\\\n\\\\n§r\"}";
+                    String mailString = mailPart1 + mailPart2 + mailPart3 + mailPart4;
+                    mailStringList.add(mailString);
                 }
-                String mailTitle = "§0《".concat(theme).concat("§0》§r");
-                if (!mail.isRead) mailTitle = "§6❀".concat(mailTitle);
-                String mailPart1 = "{\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\""
-                        + titleInfo + "\"}},\"text\":\"" + mailTitle + "\\\\n\"},";
-                String mailPart2 = "{\"text\":\"§7---------\"},";
-                String mailPart3 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail remove " + mail.ID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§c删除该邮件\"}},\"text\":\"§4[删除] \"},";
-                String mailPart4 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail open " + mail.ID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§a阅读该邮件\"}},\"text\":\"§2[打开]\\\\n\\\\n§r\"}";
-                String mailString = mailPart1 + mailPart2 + mailPart3 + mailPart4;
-                mailStringList.add(mailString);
-            }}else {
+            } else {
                 mailStringList.add("{\"text\":\"§8          空空如也\"}");
             }
             return getMailBoxItemStack(mailStringList);
@@ -227,7 +228,8 @@ public class MailManager {
         StringBuilder allContent = new StringBuilder();
         int mailCount = 0;
         int size = mailStringList.size();
-        for (String mailString : mailStringList) {
+        for (int n = mailStringList.size() - 1; n >= 0; n--) {
+            String mailString = mailStringList.get(n);
             mailCount++;
             if (mailCount % 5 == 0 || mailCount == size) {
                 pageContent.append(mailString);
