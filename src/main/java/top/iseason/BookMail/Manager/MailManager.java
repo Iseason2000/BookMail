@@ -157,8 +157,10 @@ public class MailManager {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             ArrayList<String> taskStringList = new ArrayList<>();
             String theme;
+            String infoTheme;
             for (Task task : taskList) {
                 theme = SqlManager.getSystemRecord("SystemMail", task.groupID, "主题");
+                infoTheme = theme;
                 if (theme == null)
                     theme = "";
                 int noColorLength = ChatColor.stripColor(theme).length();
@@ -169,7 +171,7 @@ public class MailManager {
                 LocalDateTime nextTime = TimeManager.getNextTime(task.type, task.sendTime, task.addTime);
                 if (nextTime == null) continue;
                 String nextString = nextTime.format(formatter);
-                String titleInfo = theme + "\\\\n§b类型: §c" + task.type + "\\\\n§b群发参数: §6"
+                String titleInfo = infoTheme + "\\\\n§b类型: §c" + task.type + "\\\\n§b群发参数: §6"
                         + task.groupArg + "\\\\n§b发送规则: §5" + task.sendTime + "\\\\n§b添加时间: §e" + task.addTime
                         + "\\\\n§3下次时间: §6" + nextString;
                 String mailTitle = "§0《".concat(theme).concat("§0》§r");

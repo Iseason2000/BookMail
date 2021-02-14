@@ -13,6 +13,7 @@ public class ConfigManager {
     int maxPackageSize;
     int packageTime;
     boolean isPlayerUse;
+    boolean isPlayerPackageUse;
 
     public ConfigManager(BookMailPlugin plugin) {
         this.plugin = plugin;
@@ -30,6 +31,7 @@ public class ConfigManager {
         maxPackageCount = config.getInt("玩家最大包裹数");
         packageTime = config.getInt("临时包裹时间");
         isPlayerUse = config.getBoolean("玩家是否可以发邮件");
+        isPlayerPackageUse = config.getBoolean("玩家是否可以发送包裹");
     }
 
     public ItemStack getOpenMailItem() {
@@ -57,6 +59,8 @@ public class ConfigManager {
     public boolean isPlayerUse() {
         return isPlayerUse;
     }
-
+    public boolean isPlayerPackageUse() {
+        return isPlayerPackageUse;
+    }
 
 }

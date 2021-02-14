@@ -2,7 +2,6 @@ name: BookMail
 main: top.iseason.BookMail.BookMailPlugin
 version: 1.0
 author: Iseason
-softdepend: []
 depend: [NBTAPI]
 commands:
   BookMail:

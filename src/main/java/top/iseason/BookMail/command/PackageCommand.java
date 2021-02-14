@@ -37,7 +37,7 @@ public class PackageCommand extends SimpleSubCommand {
             return;
         }
         Player player = (Player) sender;
-        if (!BookMailPlugin.getConfigManager().isPlayerUse() && !player.isOp()) {
+        if (!BookMailPlugin.getConfigManager().isPlayerPackageUse() && !player.isOp()) {
             Message.send(player, "&c你没有使用该命令的权限!");
             return;
         }
