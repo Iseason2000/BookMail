@@ -54,6 +54,7 @@ public class BookMailPlugin extends JavaPlugin implements Listener {
         new PackageManager();
         timeManager = new TimeManager();
         configManager = new ConfigManager(this);
+//        new CheckMCVersion(Bukkit.getVersion());
     }
 
     public void onDisable() {

@@ -69,7 +69,7 @@ public class SystemCommand extends SimpleSubCommand {
                     Message.send(player, "&c没有任何包裹!");
                     return;
                 }
-                OpenMailCommand.openBook(packageList, player);
+                player.openBook(packageList);
                 break;
             case "createMailboxes":
                 if (args.length != 2) return;
@@ -120,14 +120,14 @@ public class SystemCommand extends SimpleSubCommand {
                 if (args.length == 1) {
                     ItemStack systemMailBox = MailManager.getSystemMailBox();
                     if (systemMailBox == null) return;
-                    OpenMailCommand.openBook(systemMailBox, player);
+                    player.openBook(systemMailBox);
                     return;
                 }
                 if (args.length == 3) {
                     if (args[1].equals("open")) {
                         try {
                             ItemStack item = ItemTranslator.zipStringToItem(SqlManager.getSystemMailContent(args[2]));
-                            OpenMailCommand.openBook(item, player);
+                            player.openBook(item);
                         } catch (SQLException throwables) {
                             throwables.printStackTrace();
                         }
@@ -159,7 +159,7 @@ public class SystemCommand extends SimpleSubCommand {
                         Message.send(player, "&e 没有任何定时任务!");
                         return;
                     }
-                    OpenMailCommand.openBook(taskList, player);
+                    player.openBook(taskList);
                     return;
                 }
                 if (args.length == 3) {

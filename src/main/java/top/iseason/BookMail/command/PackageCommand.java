@@ -87,7 +87,7 @@ public class PackageCommand extends SimpleSubCommand {
                             Message.send(player, "&e你没有包裹!");
                             return;
                         }
-                        OpenMailCommand.openBook(packageList, player);
+                        player.openBook(packageList);
                     }
                 }.run();
                 break;

@@ -44,7 +44,7 @@ public class MailTranslateCommand extends SimpleSubCommand {
                     player.sendMessage(ChatColor.RED + "书必须有内容！");
                     return;
                 }
-                OpenMailCommand.openBook(newBook, player);
+                player.openBook(newBook);
             }
         }.run();
     }

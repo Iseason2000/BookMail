@@ -88,6 +88,7 @@ public class MailManager {
         try {
             ArrayList<Mail> playerMails = SqlManager.getPlayerMails(playerName);
             ArrayList<String> mailStringList = new ArrayList<>();
+            if(!playerMails.isEmpty()){
             for (Mail mail : playerMails) {
                 String theme = mail.theme;
                 String attach = "";
@@ -107,6 +108,8 @@ public class MailManager {
                 String mailPart4 = "{\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bookmail open " + mail.ID + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":{\"text\":\"§a阅读该邮件\"}},\"text\":\"§2[打开]\\\\n\\\\n§r\"}";
                 String mailString = mailPart1 + mailPart2 + mailPart3 + mailPart4;
                 mailStringList.add(mailString);
+            }}else {
+                mailStringList.add("{\"text\":\"§8          空空如也\"}");
             }
             return getMailBoxItemStack(mailStringList);
 

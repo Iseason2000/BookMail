@@ -3,7 +3,7 @@ main: top.iseason.BookMail.BookMailPlugin
 version: 1.0
 author: Iseason
 softdepend: []
-depend: [NBTAPI,ProtocolLib]
+depend: [NBTAPI]
 commands:
   BookMail:
     description: 打开邮箱。

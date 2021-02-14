@@ -1,9 +1,5 @@
 package top.iseason.BookMail.command;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +10,6 @@ import top.iseason.BookMail.Util.ItemTranslator;
 import top.iseason.BookMail.Util.SimpleSubCommand;
 import top.iseason.BookMail.myclass.Mail;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 
 public class OpenMailCommand extends SimpleSubCommand {
@@ -46,7 +41,7 @@ public class OpenMailCommand extends SimpleSubCommand {
                         SqlManager.setPlayerMailIsRead(player.getName(), id);
                         if (playerMail == null) return;
                         String content = playerMail.content;
-                        openBook(ItemTranslator.zipStringToItem(content), player);
+                        player.openBook(ItemTranslator.zipStringToItem(content));
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
@@ -62,24 +57,12 @@ public class OpenMailCommand extends SimpleSubCommand {
             @Override
             public void run() {
                 ItemStack bookItem = MailManager.getPlayerMailBox(player.getName());
-                openBook(bookItem, player);
+                if(bookItem!=null)
+                player.openBook(bookItem);
             }
         }.run();
     }
 
-    public static void openBook(ItemStack book, Player p) { //使玩家打开某本书(署名的)
-        int slot = p.getInventory().getHeldItemSlot();
-        ItemStack old = p.getInventory().getItem(slot);
-        p.getInventory().setItem(slot, book);
-        ProtocolManager pm = ProtocolLibrary.getProtocolManager();
-        PacketContainer pc = pm.createPacket(PacketType.Play.Server.OPEN_BOOK);
-        try {
-            pm.sendServerPacket(p, pc);
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        p.getInventory().setItem(slot, old);
-    }
 
 
 }
